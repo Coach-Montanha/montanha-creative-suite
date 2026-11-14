@@ -1,0 +1,11 @@
+# Temporary and binary outputs
+temp/
+*.log
+Data/Profile/
+Data/portable_trace.log
+__pycache__/
+*.pyc
+
+# Local environments
+.env
+.venv/

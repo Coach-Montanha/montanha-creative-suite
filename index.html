@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Montanha Creative Suite Pro — Hub Integrado</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="suite-container">
+    <!-- Top System Bar -->
+    <header class="system-header">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <span class="logo-icon">⛰️</span>
+          <div>
+            <div class="brand-title">MONTANHA CREATIVE SUITE</div>
+            <div class="brand-subtitle">v3.0 PRO UNIFIED HUB &bull; OFFLINE LOCAL ENGINE</div>
+          </div>
+        </div>
+        <div class="status-pill status-online">
+          <span class="status-dot"></span> Motor Local Ativo (Port 8765)
+        </div>
+        <div class="status-pill">
+          ⚡ 84 MB RAM (Edge App Mode)
+        </div>
+        <div class="status-pill">
+          ☁️ Google Drive (H:\Meu Drive) Conectado
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="btn-quick-search">
+          <span class="icon">🔍</span> Busca Rápida (Ctrl+K)
+        </button>
+        <button class="btn btn-primary" id="btn-open-export">
+          <span class="icon">🚀</span> Renderizar & Exportar
+        </button>
+      </div>
+    </header>
+
+    <!-- Master Navigation Tabs -->
+    <nav class="master-tabs">
+      <button class="nav-tab active" data-view="hub">
+        <span class="tab-icon">🏠</span> Visão Geral (Hub)
+      </button>
+      <button class="nav-tab" data-view="video">
+        <span class="tab-icon">🎬</span> Vídeo Studio (9:16 & Reels)
+      </button>
+      <button class="nav-tab" data-view="photo">
+        <span class="tab-icon">📸</span> Photo Lab (Edição Pro)
+      </button>
+      <button class="nav-tab" data-view="canvix">
+        <span class="tab-icon">🎨</span> Canvix Design (Artes & Banners)
+      </button>
+      <button class="nav-tab" data-view="ai">
+        <span class="tab-icon">⚡</span> AI & Text-to-Photo
+      </button>
+      <button class="nav-tab" data-view="media">
+        <span class="tab-icon">📁</span> Central de Mídias & Drive
+      </button>
+    </nav>
+
+    <!-- Main Workspace Views -->
+    <main class="workspace">
+      <!-- 1. HUB OVERVIEW -->
+      <section class="view-panel active" id="view-hub">
+        <div class="bento-grid">
+          <!-- Bento Card 1: Quick Action Hero -->
+          <div class="bento-card bento-hero">
+            <div class="hero-badge">SUÍTE CRIATIVA UNIFICADA</div>
+            <h2>Tudo para Vídeo, Foto e Design em um Só Lugar</h2>
+            <p>Seus fluxos criativos do Ecossistema Montanha totalmente integrados, sem alternar entre programas ou sofrer com conflitos de portas.</p>
+            
+            <div class="quick-launchers">
+              <button class="launcher-btn" onclick="switchTab('video')">
+                <span class="l-icon">🎬</span>
+                <div>
+                  <strong>Criar Novo Vídeo 9:16</strong>
+                  <span>Roteiro, voz neural e legendas Hormozi</span>
+                </div>
+              </button>
+              <button class="launcher-btn" onclick="switchTab('photo')">
+                <span class="l-icon">📸</span>
+                <div>
+                  <strong>Editar Foto no Photo Lab</strong>
+                  <span>Filtros, colagens, combiner e grade</span>
+                </div>
+              </button>
+              <button class="launcher-btn" onclick="switchTab('canvix')">
+                <span class="l-icon">🎨</span>
+                <div>
+                  <strong>Criar Arte no Canvix</strong>
+                  <span>Posts, carrosséis e capas em 4K</span>
+                </div>
+              </button>
+              <button class="launcher-btn" onclick="switchTab('ai')">
+                <span class="l-icon">⚡</span>
+                <div>
+                  <strong>Gerar via Text-to-Photo</strong>
+                  <span>Modificadores de estúdio em 1 clique</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bento Card 2: System Telemetry -->
+          <div class="bento-card bento-stats">
+            <h3>Telemetria & Performance Local</h3>
+            <div class="stat-row">
+              <span class="stat-label">Consumo de Memória</span>
+              <strong class="stat-val text-success">84 MB RAM (Alvo &lt; 100MB)</strong>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Aceleração de Render</span>
+              <strong class="stat-val">FFmpeg + SoundCraft (Local)</strong>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Economia de Tokens</span>
+              <strong class="stat-val text-warning">98.4% com @eco Engine</strong>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Destino Cloud</span>
+              <strong class="stat-val">H:\Meu Drive\Montanha Media Lab</strong>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 22%;"></div>
+            </div>
+            <div class="caption-small">Notebook Intel UHD 620 &bull; Otimizado para 4GB RAM</div>
+          </div>
+
+          <!-- Bento Card 3: Recent Production Queue -->
+          <div class="bento-card bento-queue">
+            <div class="card-header-flex">
+              <h3>Produções Recentes</h3>
+              <a href="#" onclick="switchTab('media'); return false;" class="link-muted">Ver todas &rarr;</a>
+            </div>
+            <div class="queue-list">
+              <div class="queue-item">
+                <span class="q-icon">🎥</span>
+                <div class="q-info">
+                  <strong>Reels - 3 Erros Fatais no Levantamento Terra</strong>
+                  <span>Vídeo 9:16 &bull; 0:42s &bull; Renderizado com sucesso</span>
+                </div>
+                <span class="q-badge badge-done">Pronto</span>
+              </div>
+              <div class="queue-item">
+                <span class="q-icon">🖼️</span>
+                <div class="q-info">
+                  <strong>Carrossel Instagram - Anatomia do Agachamento</strong>
+                  <span>Canvix &bull; 6 slides 1:1 &bull; 300 DPI</span>
+                </div>
+                <span class="q-badge badge-done">Pronto</span>
+              </div>
+              <div class="queue-item">
+                <span class="q-icon">📸</span>
+                <div class="q-info">
+                  <strong>Foto Perfil Oficial Coach Montanha 2026</strong>
+                  <span>Photo Lab &bull; Filtro Dark Gold &bull; Retoque</span>
+                </div>
+                <span class="q-badge badge-done">Pronto</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bento Card 4: Quick Workflow Pipeline -->
+          <div class="bento-card bento-pipeline">
+            <h3>Pipeline Contínuo em 4 Etapas</h3>
+            <div class="pipeline-steps">
+              <div class="step-card">
+                <div class="step-num">1</div>
+                <strong>IA / Ideia</strong>
+                <p>Prompt & roteiro com modificadores de estúdio</p>
+              </div>
+              <div class="step-arrow">&rarr;</div>
+              <div class="step-card">
+                <div class="step-num">2</div>
+                <strong>Photo Lab</strong>
+                <p>Tratamento, recorte e ajuste fino da imagem</p>
+              </div>
+              <div class="step-arrow">&rarr;</div>
+              <div class="step-card">
+                <div class="step-num">3</div>
+                <strong>Canvix</strong>
+                <p>Composição de design, título e badge</p>
+              </div>
+              <div class="step-arrow">&rarr;</div>
+              <div class="step-card">
+                <div class="step-num">4</div>
+                <strong>Vídeo Studio</strong>
+                <p>Narração, legendas animadas e exportação</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. VÍDEO STUDIO -->
+      <section class="view-panel" id="view-video">
+        <div class="split-workspace">
+          <!-- Editor Controls -->
+          <div class="editor-sidebar">
+            <div class="panel-box">
+              <div class="panel-title">🎬 Configuração do Vídeo 9:16 (Reels/Shorts)</div>
+              
+              <label class="input-label">Título da Produção</label>
+              <input type="text" class="input-text" value="3 Segredos da Hipertrofia Científica - Coach Montanha">
+
+              <label class="input-label">Roteiro Dinâmico (Locução Neural pt-BR)</label>
+              <textarea class="input-textarea" rows="5">Você quer dobrar os seus ganhos no agachamento sem arrebentar a sua lombar?
+O grande segredo não é colocar mais carga no achismo. É a mecânica de torque e a fixação da coluna antes de romper a paralela.
+Se a sua técnica é fraca, o seu resultado será fraco. Ajuste a postura e domine o movimento!</textarea>
+
+              <div class="form-row-2">
+                <div>
+                  <label class="input-label">Voz Neural</label>
+                  <select class="input-select">
+                    <option selected>pt-BR-AntonioNeural (Masculina Imponente)</option>
+                    <option>pt-BR-FranciscaNeural (Feminina Clara)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="input-label">Estilo de Legenda</label>
+                  <select class="input-select">
+                    <option selected>Hormozi Gold (Amarelo / Negrito)</option>
+                    <option>Viral Box (Fundo Preto / Destaque)</option>
+                    <option>Minimalist White (Clean)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div>
+                  <label class="input-label">Formato do Vídeo</label>
+                  <select class="input-select" id="video-format-select" onchange="updateVideoMockupFormat(this.value)">
+                    <option value="9:16" selected>📱 9:16 Vertical (1080x1920) — Reels, TikTok & Shorts</option>
+                    <option value="4:5">📸 4:5 Retrato Feed (1080x1350) — Feed Instagram Máximo</option>
+                    <option value="1:1">⏹️ 1:1 Quadrado (1080x1080) — Feed Clássico & LinkedIn</option>
+                    <option value="16:9">🖥️ 16:9 Widescreen (1920x1080) — YouTube & Aulas</option>
+                    <option value="21:9">🎬 21:9 Ultra-Wide (2560x1080) — Cinema & Banners</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="input-label">Áudio de Fundo (BGM)</label>
+                  <select class="input-select">
+                    <option selected>Dark Epic Trap (Leve)</option>
+                    <option>Hard Rock Workout</option>
+                    <option>Sem Música (Apenas Voz)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="action-buttons-box">
+                <button class="btn btn-primary btn-block">
+                  <span class="icon">⚡</span> Renderizar Vídeo 9:16 (FFmpeg Local)
+                </button>
+                <button class="btn btn-secondary btn-block">
+                  <span class="icon">🎧</span> Prévia de Áudio & SoundCraft
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Preview Center -->
+          <div class="preview-center">
+            <div class="video-mockup-frame">
+              <div class="mockup-header">
+                <span class="badge-pill">RESOLUÇÃO: 1080x1920 (9:16)</span>
+                <span class="badge-pill">TAXA: 60 FPS</span>
+              </div>
+              <div class="video-screen">
+                <div class="video-overlay-elements">
+                  <div class="video-badge-tag">COACH MONTANA &bull; MÉTODO PRO</div>
+                  <div class="subtitle-preview-box">
+                    <span class="word-highlight">O GRANDE SEGREDO</span> NÃO É COLOCAR MAIS CARGA NO ACHISMO!
+                  </div>
+                </div>
+                <div class="video-media-bg">
+                  <div class="simulated-workout-scene">
+                    <div class="scene-text">🏋️ VÍDEO B-ROLL COM VISUAL HIGH-TECH CINEMATOGRÁFICO</div>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-bar">
+                <div class="time-readout">00:14 / 00:38</div>
+                <div class="scrubber-track">
+                  <div class="scrubber-progress" style="width: 36%;"></div>
+                </div>
+                <div class="player-controls">
+                  <button class="ctl-btn">⏮</button>
+                  <button class="ctl-btn play-btn">▶</button>
+                  <button class="ctl-btn">⏭</button>
+                  <button class="ctl-btn">🔁</button>
+                  <span class="ctl-vol">🔊 100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PHOTO LAB -->
+      <section class="view-panel" id="view-photo">
+        <div class="photo-layout">
+          <!-- Photo Tools Sidebar -->
+          <div class="photo-sidebar">
+            <div class="sub-nav-tabs">
+              <button class="sub-tab active">Ajustes</button>
+              <button class="sub-tab">Filtros Pro</button>
+              <button class="sub-tab">Colagens</button>
+              <button class="sub-tab">Divisor Feed</button>
+              <button class="sub-tab">GIF</button>
+            </div>
+
+            <div class="controls-accordion">
+              <div class="slider-group">
+                <label>Brilho <span class="val">+12%</span></label>
+                <input type="range" min="-100" max="100" value="12" class="range-slider">
+              </div>
+              <div class="slider-group">
+                <label>Contraste <span class="val">+24%</span></label>
+                <input type="range" min="-100" max="100" value="24" class="range-slider">
+              </div>
+              <div class="slider-group">
+                <label>Nitidez / Sharpness <span class="val">+45%</span></label>
+                <input type="range" min="0" max="100" value="45" class="range-slider">
+              </div>
+              <div class="slider-group">
+                <label>Vignette Escura <span class="val">+30%</span></label>
+                <input type="range" min="0" max="100" value="30" class="range-slider">
+              </div>
+              <div class="slider-group">
+                <label>Filtro Ativo</label>
+                <div class="preset-chips">
+                  <button class="chip active">Cinematic Gold</button>
+                  <button class="chip">Dark Titan</button>
+                  <button class="chip">Obsidian High</button>
+                  <button class="chip">Pure Crisp</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="photo-actions">
+              <button class="btn btn-primary btn-block">💾 Salvar Edição em 4K</button>
+              <button class="btn btn-secondary btn-block" onclick="switchTab('canvix')">🎨 Enviar para Canvix Design</button>
+              <button class="btn btn-secondary btn-block" onclick="switchTab('video')">🎬 Usar como Capa de Vídeo</button>
+            </div>
+          </div>
+
+          <!-- Canvas Preview -->
+          <div class="photo-canvas-area">
+            <div class="photo-canvas-frame">
+              <div class="photo-stage">
+                <div class="image-placeholder">
+                  <div class="sample-photo-composition">
+                    <div class="comp-badge">FOTOGRAFIA PROFISSIONAL &bull; 4K HIGH DEFINITION</div>
+                    <div class="comp-title">COACH MONTANHA</div>
+                    <div class="comp-subtitle">Sessão Técnica &bull; Ajuste Tonal Dark Gold &bull; Nitidez Ultra</div>
+                  </div>
+                </div>
+              </div>
+              <div class="canvas-bottom-bar">
+                <span>Zoom: 100% &bull; 3840 x 2160 &bull; 24-bit sRGB</span>
+                <div class="zoom-tools">
+                  <button class="ctl-btn">-</button>
+                  <button class="ctl-btn">+</button>
+                  <button class="ctl-btn">Ajustar à Tela</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. CANVIX DESIGN -->
+      <section class="view-panel" id="view-canvix">
+        <div class="canvix-layout">
+          <!-- Toolbar Left -->
+          <div class="canvix-tools">
+            <div class="tool-section-title">Formatos de Arte</div>
+            <div class="format-buttons">
+              <button class="fmt-btn active">1:1 Feed Post</button>
+              <button class="fmt-btn">9:16 Stories/Reels</button>
+              <button class="fmt-btn">16:9 Banner</button>
+            </div>
+
+            <div class="tool-section-title">Elementos Coach Montanha</div>
+            <div class="element-chips">
+              <button class="elem-chip">🏷️ Selo Oficial "Método Montanha"</button>
+              <button class="elem-chip">⚡ Badge "Alta Performance"</button>
+              <button class="elem-chip">✍️ Caixa de Título Contrastante</button>
+              <button class="elem-chip">🔢 Marcador de Carrossel (1/6)</button>
+              <button class="elem-chip">🎯 Chamada para Ação (CTA)</button>
+            </div>
+
+            <div class="tool-section-title">Tipografia & Cores</div>
+            <div class="font-controls">
+              <label class="input-label">Fonte</label>
+              <select class="input-select">
+                <option selected>SF Pro / Montserrat (Negrito Impacto)</option>
+                <option>Cinzel / Serif Luxury</option>
+                <option>Inter Display Mono</option>
+              </select>
+              <label class="input-label">Paleta</label>
+              <div class="color-palette">
+                <span class="color-swatch" style="background:#f59e0b;"></span>
+                <span class="color-swatch" style="background:#121214;"></span>
+                <span class="color-swatch" style="background:#ffffff;"></span>
+                <span class="color-swatch" style="background:#ef4444;"></span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" style="margin-top:auto;">
+              🚀 Exportar Arte em Alta Resolução
+            </button>
+          </div>
+
+          <!-- Canvix Canvas View -->
+          <div class="canvix-canvas-area">
+            <div class="canvix-artboard">
+              <div class="artboard-inner">
+                <div class="art-tag">GUIA DEFINITIVO COACH MONTANHA</div>
+                <h1 class="art-headline">O ERRO QUE DESTRÓI SUA PROGRESSÃO DE FORÇA</h1>
+                <p class="art-subhead">Aprenda a estabilizar a coluna e gerar torque máximo no agachamento com rigor biomecânico.</p>
+                <div class="art-footer-row">
+                  <div class="art-author">@coachmontanha &bull; Fisiologia & Treinamento</div>
+                  <div class="art-badge">SLIDE 1 DE 5 &rarr;</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. AI TEXT-TO-PHOTO -->
+      <section class="view-panel" id="view-ai">
+        <div class="ai-studio-layout">
+          <div class="ai-input-card">
+            <div class="panel-title">⚡ Estúdio Text-to-Photo & Modificadores Neurais</div>
+            <p class="text-muted">Descreva a cena ou use os modificadores calibrados de estúdio para gerar imagens profissionais sem alucinações.</p>
+
+            <div class="prompt-box-wrapper">
+              <textarea class="input-textarea" id="ai-prompt-input" rows="3" placeholder="Digite seu prompt ou clique nos modificadores abaixo...">Foto profissional de atleta executando agachamento livre com barra olímpica, olhar concentrado, textura de magnésio nas mãos, iluminação de alto contraste.</textarea>
+            </div>
+
+            <div class="modifiers-bar">
+              <span class="mod-label">Modificadores Rápidos:</span>
+              <button class="chip chip-mod" onclick="addModifier('/gymNewBg')">🏋️ /gymNewBg (Academia Pro)</button>
+              <button class="chip chip-mod" onclick="addModifier('/cinematicBokehLighting')">💡 /cinematicBokehLighting</button>
+              <button class="chip chip-mod" onclick="addModifier('/removePeopleBg')">🚫 /removePeopleBg</button>
+              <button class="chip chip-mod" onclick="addModifier('/editorial')">📰 /editorial (Capa Revista)</button>
+              <button class="chip chip-mod" onclick="addModifier('/3pointsLighting')">✨ /3pointsLighting</button>
+            </div>
+
+            <div class="ai-action-bar">
+              <div class="ai-options">
+                <label>Proporção:</label>
+                <select class="input-select select-inline">
+                  <option selected>1:1 (Post Quadrado)</option>
+                  <option>9:16 (Stories/Reels)</option>
+                  <option>16:9 (Banner/Landscape)</option>
+                </select>
+                <label>Variações:</label>
+                <select class="input-select select-inline">
+                  <option selected>2 imagens</option>
+                  <option>4 imagens</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" id="btn-generate-ai">
+                ⚡ Gerar Fotos Profissionais
+              </button>
+            </div>
+          </div>
+
+          <div class="ai-results-grid">
+            <div class="result-card">
+              <div class="result-img-box">
+                <div class="sample-render r-1">
+                  <div class="render-badge">Variação 1 &bull; /gymNewBg + /cinematicBokeh</div>
+                </div>
+              </div>
+              <div class="result-card-actions">
+                <button class="btn btn-sm btn-secondary" onclick="switchTab('photo')">📸 Abrir no Photo Lab</button>
+                <button class="btn btn-sm btn-secondary" onclick="switchTab('canvix')">🎨 Levar ao Canvix</button>
+                <button class="btn btn-sm btn-primary">⬇️ Download</button>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div class="result-img-box">
+                <div class="sample-render r-2">
+                  <div class="render-badge">Variação 2 &bull; /editorial + /3pointsLighting</div>
+                </div>
+              </div>
+              <div class="result-card-actions">
+                <button class="btn btn-sm btn-secondary" onclick="switchTab('photo')">📸 Abrir no Photo Lab</button>
+                <button class="btn btn-sm btn-secondary" onclick="switchTab('canvix')">🎨 Levar ao Canvix</button>
+                <button class="btn btn-sm btn-primary">⬇️ Download</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. CENTRAL DE MÍDIAS & DRIVE -->
+      <section class="view-panel" id="view-media">
+        <div class="media-library-layout">
+          <div class="media-header-bar">
+            <div>
+              <h2>Central Unificada de Mídias</h2>
+              <p class="text-muted">Acesse instantaneamente todos os vídeos, capas, posts e fotos produzidos no Ecossistema Montanha.</p>
+            </div>
+            <div class="media-header-btns">
+              <button class="btn btn-secondary">📂 Abrir Pasta Local</button>
+              <button class="btn btn-primary">☁️ Sincronizar Google Drive (H:\Meu Drive)</button>
+            </div>
+          </div>
+
+          <div class="media-grid">
+            <div class="media-card">
+              <div class="media-thumb m-vid">
+                <span class="m-play">▶ 00:42</span>
+              </div>
+              <div class="media-meta">
+                <strong>reels_agachamento_biomecanica.mp4</strong>
+                <span>1080x1920 &bull; 60 FPS &bull; 18.4 MB</span>
+                <div class="m-links">
+                  <a href="#" class="link-download">⬇️ Download Direto</a>
+                  <a href="#" class="link-open">Abrir Local</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="media-card">
+              <div class="media-thumb m-img1">
+                <span class="m-tag">CANVIX</span>
+              </div>
+              <div class="media-meta">
+                <strong>carrossel_anatomia_agachamento_01.png</strong>
+                <span>1080x1080 &bull; 300 DPI &bull; 2.8 MB</span>
+                <div class="m-links">
+                  <a href="#" class="link-download">⬇️ Download Direto</a>
+                  <a href="#" class="link-open">Abrir Local</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="media-card">
+              <div class="media-thumb m-img2">
+                <span class="m-tag">PHOTO LAB</span>
+              </div>
+              <div class="media-meta">
+                <strong>retrato_coach_montanha_darkgold.png</strong>
+                <span>3840x2160 &bull; 4K &bull; 6.2 MB</span>
+                <div class="m-links">
+                  <a href="#" class="link-download">⬇️ Download Direto</a>
+                  <a href="#" class="link-open">Abrir Local</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="media-card">
+              <div class="media-thumb m-vid2">
+                <span class="m-play">▶ 00:30</span>
+              </div>
+              <div class="media-meta">
+                <strong>shorts_nutricao_psmf_dicas.mp4</strong>
+                <span>1080x1920 &bull; 60 FPS &bull; 14.1 MB</span>
+                <div class="m-links">
+                  <a href="#" class="link-download">⬇️ Download Direto</a>
+                  <a href="#" class="link-open">Abrir Local</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Export Window -->
+    <div class="modal-overlay" id="export-modal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>🚀 Central de Exportação & Renderização Rápida</h3>
+          <button class="modal-close" onclick="closeExportModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Selecione as mídias prontas para renderizar ou salvar em disco:</p>
+          <div class="export-options">
+            <label class="checkbox-row">
+              <input type="checkbox" checked>
+              <span><strong>Vídeo 9:16 Reels</strong> (Áudio Neural + Legendas Hormozi + FFmpeg)</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" checked>
+              <span><strong>Capa do Vídeo no Canvix</strong> (1080x1920 alta resolução)</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" checked>
+              <span><strong>Backup Instantâneo no Google Drive</strong> (H:\Meu Drive\Montanha Media Lab)</span>
+            </label>
+          </div>
+          <div class="export-settings-row">
+            <div>
+              <label class="input-label">Qualidade de Render</label>
+              <select class="input-select">
+                <option selected>Ultra HD 4K (Melhor Nitidez)</option>
+                <option>Full HD 1080p (Rápido)</option>
+              </select>
+            </div>
+            <div>
+              <label class="input-label">Codec de Vídeo</label>
+              <select class="input-select">
+                <option selected>H.264 (Compatível com Instagram/TikTok)</option>
+                <option>HEVC / H.265 (Mais Leve)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeExportModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="alert('Renderização iniciada em background pelo motor local FFmpeg!'); closeExportModal();">
+            Iniciar Renderização Agora
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
