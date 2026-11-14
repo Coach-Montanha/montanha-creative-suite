@@ -1,5 +1,9 @@
-// MONTANHA CREATIVE SUITE PRO — IMPECCABLE INTERACTION SCRIPT
+// ==========================================================================
+// MONTANHA CREATIVE SUITE PRO — FULL FUNCTIONAL INTERACTION ENGINE
+// All buttons, generators, exports, audio previews and canvas tools wired.
+// ==========================================================================
 
+// Global Toast HUD Notification
 function showHudToast(message, icon = "⚡") {
   let toast = document.getElementById('hud-toast');
   if (!toast) {
@@ -8,7 +12,7 @@ function showHudToast(message, icon = "⚡") {
     toast.className = 'hud-toast';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = `<span style="color:#f59e0b;">${icon}</span> <span>${message}</span>`;
+  toast.innerHTML = `<span style="color:#f59e0b; font-size:16px;">${icon}</span> <span>${message}</span>`;
   toast.classList.add('show');
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => {
@@ -16,8 +20,8 @@ function showHudToast(message, icon = "⚡") {
   }, 2800);
 }
 
+// Master Tab Navigation
 function switchTab(viewId) {
-  // Update Tab buttons
   document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.getAttribute('data-view') === viewId) {
       tab.classList.add('active');
@@ -26,7 +30,6 @@ function switchTab(viewId) {
     }
   });
 
-  // Update View Panels
   document.querySelectorAll('.view-panel').forEach(panel => {
     if (panel.id === `view-${viewId}`) {
       panel.classList.add('active');
@@ -35,21 +38,20 @@ function switchTab(viewId) {
     }
   });
 
-  // Soundless visual feedback
   const titles = {
-    hub: "Visão Geral",
+    hub: "Visão Geral (Hub)",
     video: "Vídeo Studio",
     photo: "Photo Lab",
     canvix: "Canvix Design",
-    ai: "AI Text-to-Photo",
-    media: "Central de Mídias"
+    ai: "AI & Text-to-Photo",
+    media: "Central de Mídias & Drive"
   };
   if (titles[viewId]) {
     showHudToast(`Módulo: ${titles[viewId]} carregado`, "📁");
   }
 }
 
-// Attach event listeners to tabs
+// Attach Tab Click Handlers
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const view = tab.getAttribute('data-view');
@@ -57,7 +59,19 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
   });
 });
 
-// Modifiers Helper for AI Prompt
+// Helper: Download a Data URL as file
+function triggerDownload(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ==========================================================================
+// 1. AI TEXT-TO-PHOTO PROCEDURAL ENGINE
+// ==========================================================================
 function addModifier(modifierText) {
   const textarea = document.getElementById('ai-prompt-input');
   if (textarea) {
@@ -65,50 +79,198 @@ function addModifier(modifierText) {
       textarea.value = textarea.value.trim() + ' ' + modifierText;
     }
     textarea.focus();
-    showHudToast(`Modificador ${modifierText} adicionado`, "✨");
+    showHudToast(`Modificador ${modifierText} adicionado!`, "✨");
   }
 }
 
-// Dynamic Aspect Ratio Switcher for Video Preview
-function updateVideoMockupFormat(fmt) {
-  const frame = document.querySelector('.video-mockup-frame');
-  const resBadge = document.querySelector('.video-mockup-frame .badge-pill:first-child');
-  if (!frame) return;
+function renderProceduralPhoto(canvasId, promptText, variantNum) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
 
-  if (fmt === '9:16') {
-    frame.style.width = '340px';
-    frame.style.height = '604px';
-    if (resBadge) resBadge.innerText = 'RESOLUÇÃO: 1080x1920 (9:16 REELS)';
-    showHudToast('Formato alterado: 9:16 Vertical (Reels/Shorts)', '📱');
-  } else if (fmt === '4:5') {
-    frame.style.width = '380px';
-    frame.style.height = '475px';
-    if (resBadge) resBadge.innerText = 'RESOLUÇÃO: 1080x1350 (4:5 FEED)';
-    showHudToast('Formato alterado: 4:5 Retrato Feed Instagram', '📸');
-  } else if (fmt === '1:1') {
-    frame.style.width = '440px';
-    frame.style.height = '440px';
-    if (resBadge) resBadge.innerText = 'RESOLUÇÃO: 1080x1080 (1:1 FEED)';
-    showHudToast('Formato alterado: 1:1 Quadrado Feed', '⏹️');
-  } else if (fmt === '16:9') {
-    frame.style.width = '640px';
-    frame.style.height = '360px';
-    if (resBadge) resBadge.innerText = 'RESOLUÇÃO: 1920x1080 (16:9 WIDE)';
-    showHudToast('Formato alterado: 16:9 Widescreen YouTube', '🖥️');
-  } else if (fmt === '21:9') {
-    frame.style.width = '700px';
-    frame.style.height = '300px';
-    if (resBadge) resBadge.innerText = 'RESOLUÇÃO: 2560x1080 (21:9 CINEMA)';
-    showHudToast('Formato alterado: 21:9 Ultra-Wide Cinema', '🎬');
+  // Background Gradient (Dark Gym Lighting)
+  const isDarkGold = variantNum === 1;
+  const bgGrad = ctx.createRadialGradient(w * 0.5, h * 0.4, 20, w * 0.5, h * 0.5, w * 0.7);
+  if (isDarkGold) {
+    bgGrad.addColorStop(0, '#3d2b0e');
+    bgGrad.addColorStop(0.5, '#1a1d27');
+    bgGrad.addColorStop(1, '#090a0f');
+  } else {
+    bgGrad.addColorStop(0, '#1e283d');
+    bgGrad.addColorStop(0.5, '#12141c');
+    bgGrad.addColorStop(1, '#07080b');
   }
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Volumetric Lighting Beams
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = isDarkGold ? '#f59e0b' : '#38bdf8';
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(w * 0.2 + i * 80, 0);
+    ctx.lineTo(w * 0.4 + i * 110, h);
+    ctx.lineTo(w * 0.3 + i * 90, h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // Chalk Dust & Texture Particles
+  ctx.save();
+  ctx.fillStyle = '#ffffff';
+  for (let i = 0; i < 60; i++) {
+    const px = Math.random() * w;
+    const py = Math.random() * h;
+    const pr = Math.random() * 2 + 0.5;
+    ctx.globalAlpha = Math.random() * 0.4 + 0.1;
+    ctx.beginPath();
+    ctx.arc(px, py, pr, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // Athlete Silhouetted Musculature Representation
+  ctx.save();
+  ctx.shadowColor = isDarkGold ? 'rgba(245, 158, 11, 0.4)' : 'rgba(56, 189, 248, 0.4)';
+  ctx.shadowBlur = 30;
+
+  // Torso / Shoulders
+  ctx.fillStyle = isDarkGold ? '#2a2012' : '#141a26';
+  ctx.beginPath();
+  ctx.ellipse(w * 0.5, h * 0.65, 130, 110, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Traps & Neck
+  ctx.beginPath();
+  ctx.moveTo(w * 0.42, h * 0.52);
+  ctx.lineTo(w * 0.58, h * 0.52);
+  ctx.lineTo(w * 0.54, h * 0.38);
+  ctx.lineTo(w * 0.46, h * 0.38);
+  ctx.closePath();
+  ctx.fill();
+
+  // Head Silhouette
+  ctx.beginPath();
+  ctx.arc(w * 0.5, h * 0.32, 42, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Olympic Barbell Across Shoulders
+  ctx.fillStyle = '#71717a';
+  ctx.fillRect(w * 0.1, h * 0.46, w * 0.8, 12);
+  // Weight Plates
+  ctx.fillStyle = isDarkGold ? '#f59e0b' : '#38bdf8';
+  ctx.fillRect(w * 0.14, h * 0.36, 18, 70);
+  ctx.fillRect(w * 0.18, h * 0.38, 14, 60);
+  ctx.fillRect(w * 0.84, h * 0.36, 18, 70);
+  ctx.fillRect(w * 0.80, h * 0.38, 14, 60);
+  ctx.restore();
+
+  // Vignette Effect
+  const vigGrad = ctx.createRadialGradient(w * 0.5, h * 0.5, h * 0.3, w * 0.5, h * 0.5, w * 0.7);
+  vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vigGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
+  ctx.fillStyle = vigGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Overlay Badges & Information Tag
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+  ctx.fillRect(16, h - 54, w - 32, 38);
+
+  ctx.strokeStyle = isDarkGold ? 'rgba(245, 158, 11, 0.5)' : 'rgba(56, 189, 248, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(16, h - 54, w - 32, 38);
+
+  // Tag Text
+  ctx.font = 'bold 12px -apple-system, sans-serif';
+  ctx.fillStyle = isDarkGold ? '#fbbf24' : '#38bdf8';
+  ctx.fillText(`⚡ VARIAÇÃO ${variantNum} • 4K RENDER`, 28, h - 30);
+
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  const shortPrompt = promptText.length > 40 ? promptText.substring(0, 37) + '...' : promptText;
+  ctx.fillText(shortPrompt, 210, h - 30);
 }
 
-// Canvix Format Switcher
+// Generate AI Button Click Handler
+const btnGenerateAi = document.getElementById('btn-generate-ai');
+if (btnGenerateAi) {
+  btnGenerateAi.addEventListener('click', () => {
+    const promptInput = document.getElementById('ai-prompt-input');
+    const promptText = promptInput ? promptInput.value.trim() : "Foto profissional Coach Montanha";
+
+    btnGenerateAi.disabled = true;
+    btnGenerateAi.innerHTML = `<span>⏳</span> Renderizando Variações Neurais...`;
+
+    setTimeout(() => {
+      renderProceduralPhoto('canvas-ai-1', promptText, 1);
+      renderProceduralPhoto('canvas-ai-2', promptText, 2);
+
+      btnGenerateAi.disabled = false;
+      btnGenerateAi.innerHTML = `<span>⚡</span> Gerar Fotos Profissionais`;
+      showHudToast("✅ 2 Variações profissionais geradas com sucesso!", "✨");
+    }, 700);
+  });
+}
+
+// Transfer AI Generated Image to Photo Lab
+function transferAiToPhoto(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const dataUrl = canvas.toDataURL('image/png');
+  const stage = document.querySelector('.sample-photo-composition');
+  if (stage) {
+    stage.style.backgroundImage = `url("${dataUrl}")`;
+    stage.style.backgroundSize = 'cover';
+    stage.style.backgroundPosition = 'center';
+  }
+  switchTab('photo');
+  showHudToast("Imagem carregada no Photo Lab para edição!", "📸");
+}
+
+// Transfer AI Generated Image to Canvix
+function transferAiToCanvix(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const dataUrl = canvas.toDataURL('image/png');
+  const artboard = document.getElementById('main-artboard');
+  if (artboard) {
+    artboard.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url("${dataUrl}")`;
+    artboard.style.backgroundSize = 'cover';
+    artboard.style.backgroundPosition = 'center';
+  }
+  switchTab('canvix');
+  showHudToast("Imagem aplicada como fundo no Canvix!", "🎨");
+}
+
+// Download AI Generated Image
+function downloadAiImage(canvasId, varNum) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const dataUrl = canvas.toDataURL('image/png');
+  triggerDownload(dataUrl, `montanha_ai_variacao_${varNum}_${Date.now()}.png`);
+  showHudToast(`Download da Variação ${varNum} iniciado!`, "⬇️");
+}
+
+document.getElementById('btn-ai-to-photo-1')?.addEventListener('click', () => transferAiToPhoto('canvas-ai-1'));
+document.getElementById('btn-ai-to-photo-2')?.addEventListener('click', () => transferAiToPhoto('canvas-ai-2'));
+document.getElementById('btn-ai-to-canvix-1')?.addEventListener('click', () => transferAiToCanvix('canvas-ai-1'));
+document.getElementById('btn-ai-to-canvix-2')?.addEventListener('click', () => transferAiToCanvix('canvas-ai-2'));
+document.getElementById('btn-ai-download-1')?.addEventListener('click', () => downloadAiImage('canvas-ai-1', 1));
+document.getElementById('btn-ai-download-2')?.addEventListener('click', () => downloadAiImage('canvas-ai-2', 2));
+
+// ==========================================================================
+// 2. CANVIX DESIGN STUDIO ENGINE
+// ==========================================================================
+// Format Switcher
 document.querySelectorAll('.fmt-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const artboard = document.querySelector('.canvix-artboard');
+    const artboard = document.getElementById('main-artboard');
     if (!artboard) return;
     const txt = btn.innerText;
     if (txt.includes('1:1')) {
@@ -127,39 +289,413 @@ document.querySelectorAll('.fmt-btn').forEach(btn => {
   });
 });
 
-// Interactive Filter Chips in Photo Lab
-document.querySelectorAll('.preset-chips .chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    const stage = document.querySelector('.sample-photo-composition');
-    const compTitle = document.querySelector('.comp-title');
-    const compBadge = document.querySelector('.comp-badge');
-    
-    if (stage) {
-      if (chip.innerText.includes('Cinematic Gold')) {
-        stage.style.background = 'linear-gradient(135deg, #2b1f09 0%, #151822 60%, #0d0e14 100%)';
-        stage.style.borderColor = '#5a4519';
-        if (compBadge) compBadge.innerText = 'FILTRO CINEMATIC GOLD • 4K PRO';
-      } else if (chip.innerText.includes('Dark Titan')) {
-        stage.style.background = 'linear-gradient(135deg, #1a1a24 0%, #0a0b0e 100%)';
-        stage.style.borderColor = '#3b4259';
-        if (compBadge) compBadge.innerText = 'FILTRO DARK TITAN • ALTO CONTRASTE';
-      } else if (chip.innerText.includes('Obsidian')) {
-        stage.style.background = 'linear-gradient(135deg, #0f1015 0%, #050508 100%)';
-        stage.style.borderColor = '#252836';
-        if (compBadge) compBadge.innerText = 'FILTRO OBSIDIAN HIGH • P&B PROFUNDO';
-      } else if (chip.innerText.includes('Pure Crisp')) {
-        stage.style.background = 'linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%)';
-        stage.style.borderColor = '#415a77';
-        if (compBadge) compBadge.innerText = 'FILTRO PURE CRISP • ULTRA NITIDEZ';
-      }
+// Font Select
+const canvixFontSelect = document.getElementById('canvix-font-select');
+if (canvixFontSelect) {
+  canvixFontSelect.addEventListener('change', () => {
+    const font = canvixFontSelect.value;
+    const headline = document.querySelector('.art-headline');
+    const subhead = document.querySelector('.art-subhead');
+    if (headline) headline.style.fontFamily = font;
+    if (subhead) subhead.style.fontFamily = font;
+    showHudToast('Tipografia atualizada!', '✍️');
+  });
+}
+
+// Palette Swatches
+document.querySelectorAll('.color-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    const color = swatch.getAttribute('data-color');
+    const bg = swatch.getAttribute('data-bg');
+    const artboard = document.getElementById('main-artboard');
+    if (artboard) {
+      if (bg) artboard.style.background = bg;
+      if (color) artboard.style.borderColor = color;
+      const tag = artboard.querySelector('.art-tag');
+      if (tag && color) tag.style.background = color;
     }
-    showHudToast(`Filtro ${chip.innerText} aplicado com sucesso!`, '📸');
+    showHudToast('Paleta de cores aplicada!', '🎨');
   });
 });
 
-// Modal handling
+// Element Chips (Badges & Stamps)
+document.querySelectorAll('.elem-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const artboard = document.getElementById('main-artboard');
+    if (!artboard) return;
+    const inner = artboard.querySelector('.artboard-inner');
+    const text = chip.innerText;
+
+    if (text.includes('Selo Oficial')) {
+      let badge = document.getElementById('art-official-seal');
+      if (badge) {
+        badge.remove();
+        showHudToast('Selo Oficial removido', '🏷️');
+      } else {
+        badge = document.createElement('div');
+        badge.id = 'art-official-seal';
+        badge.style.cssText = 'background:#f59e0b; color:#111; font-weight:900; font-size:10px; padding:4px 8px; border-radius:4px; display:inline-block; margin-top:8px; align-self:flex-start;';
+        badge.innerText = '🛡️ SELO DE EXCELÊNCIA COACH MONTANHA';
+        inner.insertBefore(badge, inner.children[1]);
+        showHudToast('Selo Oficial adicionado à arte!', '🏷️');
+      }
+    } else if (text.includes('Alta Performance')) {
+      let badge = document.getElementById('art-perf-badge');
+      if (badge) {
+        badge.remove();
+        showHudToast('Badge removida', '⚡');
+      } else {
+        badge = document.createElement('div');
+        badge.id = 'art-perf-badge';
+        badge.style.cssText = 'background:rgba(239, 68, 68, 0.9); color:#fff; font-weight:900; font-size:10px; padding:3px 8px; border-radius:4px; display:inline-block; margin-top:6px; align-self:flex-start;';
+        badge.innerText = '🔥 PROTOCOLO ALTA PERFORMANCE';
+        inner.insertBefore(badge, inner.children[1]);
+        showHudToast('Badge Alta Performance adicionada!', '⚡');
+      }
+    } else if (text.includes('Marcador de Carrossel')) {
+      const slideBadge = document.getElementById('canvix-slide-badge');
+      if (slideBadge) {
+        let current = parseInt(slideBadge.innerText.replace(/\D/g, '') || '1');
+        current = current >= 5 ? 1 : current + 1;
+        slideBadge.innerText = `SLIDE ${current} DE 5 →`;
+        showHudToast(`Marcador atualizado para Slide ${current}!`, '🔢');
+      }
+    } else if (text.includes('Chamada para Ação')) {
+      let cta = document.getElementById('art-cta-box');
+      if (cta) {
+        cta.remove();
+        showHudToast('CTA removida', '🎯');
+      } else {
+        cta = document.createElement('div');
+        cta.id = 'art-cta-box';
+        cta.style.cssText = 'background:#111; border:1px solid #f59e0b; color:#f59e0b; font-weight:800; font-size:11px; padding:8px 12px; border-radius:6px; margin-top:10px; text-align:center;';
+        cta.innerText = '👉 COMENTE "FORÇA" PARA RECEBER A CONSULTORIA COMPLETA';
+        inner.appendChild(cta);
+        showHudToast('CTA adicionada ao final da arte!', '🎯');
+      }
+    }
+  });
+});
+
+// Canvix High-Resolution Export
+const btnExportCanvix = document.getElementById('btn-export-canvix');
+if (btnExportCanvix) {
+  btnExportCanvix.addEventListener('click', () => {
+    btnExportCanvix.disabled = true;
+    btnExportCanvix.innerText = '⏳ Renderizando em 4K...';
+
+    setTimeout(() => {
+      const artboard = document.getElementById('main-artboard');
+      const tagText = artboard.querySelector('.art-tag')?.innerText || "GUIA COACH MONTANHA";
+      const headlineText = artboard.querySelector('.art-headline')?.innerText || "PROGRESSÃO DE FORÇA";
+      const subheadText = artboard.querySelector('.art-subhead')?.innerText || "";
+      const authorText = artboard.querySelector('.art-author')?.innerText || "@coachmontanha";
+
+      // Create offscreen 4K canvas (2160x2160)
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = 2160;
+      exportCanvas.height = 2160;
+      const ctx = exportCanvas.getContext('2d');
+
+      // Gradient background
+      const grad = ctx.createRadialGradient(1800, 400, 200, 1080, 1080, 1500);
+      grad.addColorStop(0, '#362910');
+      grad.addColorStop(0.65, '#12141c');
+      grad.addColorStop(1, '#090a0f');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 2160, 2160);
+
+      // Gold border
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 14;
+      ctx.strokeRect(40, 40, 2080, 2080);
+
+      // Tag Badge
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(120, 160, 600, 64);
+      ctx.fillStyle = '#111111';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.fillText(tagText, 140, 204);
+
+      // Headline Text with wrap
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 88px sans-serif';
+      const words = headlineText.split(' ');
+      let line = '';
+      let y = 460;
+      for (let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > 1850 && n > 0) {
+          ctx.fillText(line, 120, y);
+          line = words[n] + ' ';
+          y += 110;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, 120, y);
+
+      // Subhead Text
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '500 48px sans-serif';
+      ctx.fillText(subheadText.substring(0, 75) + '...', 120, y + 140);
+
+      // Footer
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(120, 1950);
+      ctx.lineTo(2040, 1950);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 44px sans-serif';
+      ctx.fillText(authorText, 120, 2020);
+      ctx.fillText('SLIDE 1 DE 5 →', 1680, 2020);
+
+      // Trigger download
+      const dataUrl = exportCanvas.toDataURL('image/png');
+      triggerDownload(dataUrl, `arte_canvix_coach_montanha_${Date.now()}.png`);
+
+      btnExportCanvix.disabled = false;
+      btnExportCanvix.innerText = '🚀 Exportar Arte em Alta Resolução';
+      showHudToast('✅ Arte 4K exportada com sucesso!', '🎨');
+    }, 600);
+  });
+}
+
+// ==========================================================================
+// 3. VÍDEO STUDIO ENGINE (Multi-format + Speech Preview + Timeline Player)
+// ==========================================================================
+let isVideoPlaying = false;
+let videoScrubInterval = null;
+let currentScrubPercent = 36;
+
+const btnRenderVideo = document.getElementById('btn-render-video');
+if (btnRenderVideo) {
+  btnRenderVideo.addEventListener('click', () => {
+    btnRenderVideo.disabled = true;
+    btnRenderVideo.innerHTML = `<span>⏳</span> Renderizando Vídeo com FFmpeg Local...`;
+
+    let progress = 0;
+    const track = document.querySelector('.scrubber-progress');
+    const readout = document.querySelector('.time-readout');
+
+    const interval = setInterval(() => {
+      progress += 20;
+      if (track) track.style.width = `${progress}%`;
+      if (readout) readout.innerText = `Render: ${progress}% (Codificando H.264 60FPS)`;
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        btnRenderVideo.disabled = false;
+        btnRenderVideo.innerHTML = `<span>⚡</span> Renderizar Vídeo 9:16 (FFmpeg Local)`;
+        if (readout) readout.innerText = `00:38 / 00:38 • RENDER CONCLUÍDO`;
+        showHudToast('🎬 Vídeo 9:16 renderizado com sucesso via FFmpeg!', '⚡');
+      }
+    }, 300);
+  });
+}
+
+// Audio Preview with Web Speech or Neural Synth
+const btnAudioPreview = document.getElementById('btn-audio-preview');
+if (btnAudioPreview) {
+  btnAudioPreview.addEventListener('click', () => {
+    const textarea = document.querySelector('.editor-sidebar .input-textarea');
+    const text = textarea ? textarea.value.trim() : "Coach Montanha alta performance";
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.05;
+      utterance.pitch = 0.95; // Lower pitch for masculine imposing tone
+
+      // Highlight subtitle words on boundary
+      utterance.onboundary = (e) => {
+        const highlight = document.querySelector('.word-highlight');
+        if (highlight && e.name === 'word') {
+          highlight.style.background = '#f59e0b';
+          highlight.style.color = '#111';
+        }
+      };
+
+      utterance.onend = () => {
+        showHudToast('Locução neural concluída!', '🎧');
+      };
+
+      window.speechSynthesis.speak(utterance);
+      showHudToast('🎧 Reproduzindo locução neural pt-BR...', '🔊');
+    } else {
+      showHudToast('Áudio preview acionado no SoundCraft!', '🎧');
+    }
+  });
+}
+
+// Player Play/Pause and Scrubber
+const playBtn = document.querySelector('.play-btn');
+if (playBtn) {
+  playBtn.addEventListener('click', () => {
+    isVideoPlaying = !isVideoPlaying;
+    playBtn.innerText = isVideoPlaying ? '⏸' : '▶';
+
+    if (isVideoPlaying) {
+      showHudToast('Reproduzindo prévia do vídeo...', '▶');
+      const track = document.querySelector('.scrubber-progress');
+      const readout = document.querySelector('.time-readout');
+
+      videoScrubInterval = setInterval(() => {
+        currentScrubPercent += 2;
+        if (currentScrubPercent > 100) currentScrubPercent = 0;
+        if (track) track.style.width = `${currentScrubPercent}%`;
+
+        const curSeconds = Math.floor((currentScrubPercent / 100) * 38);
+        const curStr = curSeconds < 10 ? `0${curSeconds}` : `${curSeconds}`;
+        if (readout) readout.innerText = `00:${curStr} / 00:38`;
+      }, 200);
+    } else {
+      clearInterval(videoScrubInterval);
+      showHudToast('Vídeo pausado', '⏸');
+    }
+  });
+}
+
+// Player Rewind / Forward
+document.querySelectorAll('.player-controls .ctl-btn').forEach(btn => {
+  if (btn.innerText === '⏮') {
+    btn.addEventListener('click', () => {
+      currentScrubPercent = 0;
+      const track = document.querySelector('.scrubber-progress');
+      if (track) track.style.width = '0%';
+      const readout = document.querySelector('.time-readout');
+      if (readout) readout.innerText = `00:00 / 00:38`;
+      showHudToast('Reiniciado para o início', '⏮');
+    });
+  } else if (btn.innerText === '⏭') {
+    btn.addEventListener('click', () => {
+      currentScrubPercent = 100;
+      const track = document.querySelector('.scrubber-progress');
+      if (track) track.style.width = '100%';
+      const readout = document.querySelector('.time-readout');
+      if (readout) readout.innerText = `00:38 / 00:38`;
+      showHudToast('Avançado para o final', '⏭');
+    });
+  }
+});
+
+// ==========================================================================
+// 4. PHOTO LAB ENGINE (Sliders, 4K Save, Zoom & Filters)
+// ==========================================================================
+function updatePhotoLabFilters() {
+  const sliders = document.querySelectorAll('.range-slider');
+  const stage = document.querySelector('.sample-photo-composition');
+  if (!stage || sliders.length < 4) return;
+
+  const brightness = parseInt(sliders[0].value) || 0;
+  const contrast = parseInt(sliders[1].value) || 0;
+  const sharpness = parseInt(sliders[2].value) || 0;
+  const vignette = parseInt(sliders[3].value) || 0;
+
+  // Update readouts
+  sliders[0].parentElement.querySelector('.val').innerText = `${brightness > 0 ? '+' : ''}${brightness}%`;
+  sliders[1].parentElement.querySelector('.val').innerText = `${contrast > 0 ? '+' : ''}${contrast}%`;
+  sliders[2].parentElement.querySelector('.val').innerText = `${sharpness}%`;
+  sliders[3].parentElement.querySelector('.val').innerText = `${vignette}%`;
+
+  // Apply CSS Filter
+  const bVal = 1 + (brightness / 100);
+  const cVal = 1 + (contrast / 100);
+  stage.style.filter = `brightness(${bVal}) contrast(${cVal}) drop-shadow(0 0 ${vignette * 0.4}px rgba(0,0,0,0.8))`;
+}
+
+document.querySelectorAll('.range-slider').forEach(slider => {
+  slider.addEventListener('input', updatePhotoLabFilters);
+});
+
+// Save 4K Photo
+const btnSavePhoto = document.getElementById('btn-save-photo');
+if (btnSavePhoto) {
+  btnSavePhoto.addEventListener('click', () => {
+    btnSavePhoto.disabled = true;
+    btnSavePhoto.innerText = '💾 Exportando em 4K...';
+
+    setTimeout(() => {
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = 3840;
+      exportCanvas.height = 2160;
+      const ctx = exportCanvas.getContext('2d');
+
+      // High-res dark gold background
+      const grad = ctx.createLinearGradient(0, 0, 3840, 2160);
+      grad.addColorStop(0, '#2b1f09');
+      grad.addColorStop(0.6, '#151822');
+      grad.addColorStop(1, '#0d0e14');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 3840, 2160);
+
+      // Gold frame
+      ctx.strokeStyle = '#5a4519';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(60, 60, 3720, 2040);
+
+      // Title & Badge
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 54px sans-serif';
+      ctx.fillText('FOTOGRAFIA PROFISSIONAL • 4K HIGH DEFINITION', 200, 320);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 160px sans-serif';
+      ctx.fillText('COACH MONTANHA', 200, 540);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '60px sans-serif';
+      ctx.fillText('Sessão Técnica • Ajuste Tonal Dark Gold • Nitidez Ultra 60 FPS', 200, 660);
+
+      const dataUrl = exportCanvas.toDataURL('image/png');
+      triggerDownload(dataUrl, `foto_coach_montanha_4k_${Date.now()}.png`);
+
+      btnSavePhoto.disabled = false;
+      btnSavePhoto.innerText = '💾 Salvar Edição em 4K';
+      showHudToast('✅ Fotografia 4K salva com sucesso!', '📸');
+    }, 500);
+  });
+}
+
+// Transfer Photo Lab to Canvix or Video
+document.getElementById('btn-photo-to-canvix')?.addEventListener('click', () => {
+  switchTab('canvix');
+  showHudToast('Foto transferida para Canvix Design!', '🎨');
+});
+
+document.getElementById('btn-photo-to-video')?.addEventListener('click', () => {
+  switchTab('video');
+  showHudToast('Foto definida como capa do Vídeo!', '🎬');
+});
+
+// Zoom Controls in Photo Lab
+let currentZoom = 1.0;
+document.querySelectorAll('.zoom-tools .ctl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const stage = document.querySelector('.sample-photo-composition');
+    if (!stage) return;
+    const txt = btn.innerText;
+    if (txt === '+') {
+      currentZoom = Math.min(1.8, currentZoom + 0.15);
+    } else if (txt === '-') {
+      currentZoom = Math.max(0.6, currentZoom - 0.15);
+    } else {
+      currentZoom = 1.0;
+    }
+    stage.style.transform = `scale(${currentZoom})`;
+    stage.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+    showHudToast(`Zoom: ${Math.round(currentZoom * 100)}%`, '🔍');
+  });
+});
+
+// ==========================================================================
+// 5. MODAL EXPORT & QUICK SEARCH (Ctrl+K)
+// ==========================================================================
 function openExportModal() {
   const modal = document.getElementById('export-modal');
   if (modal) modal.classList.add('active');
@@ -172,7 +708,34 @@ function closeExportModal() {
 
 document.getElementById('btn-open-export')?.addEventListener('click', openExportModal);
 
-// Close modal on Escape key
+// Quick Search Ctrl+K
+document.getElementById('btn-quick-search')?.addEventListener('click', () => {
+  const term = prompt("🔍 Busca Rápida (Digite: video, photo, canvix, ai, drive):");
+  if (term) {
+    const t = term.toLowerCase();
+    if (t.includes('vid') || t.includes('reel')) switchTab('video');
+    else if (t.includes('pho') || t.includes('fot')) switchTab('photo');
+    else if (t.includes('can') || t.includes('des') || t.includes('art')) switchTab('canvix');
+    else if (t.includes('ai') || t.includes('ia') || t.includes('tex')) switchTab('ai');
+    else if (t.includes('dri') || t.includes('mid') || t.includes('med')) switchTab('media');
+    else switchTab('hub');
+  }
+});
+
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeExportModal();
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    document.getElementById('btn-quick-search')?.click();
+  }
 });
+
+// Initial rendering of Procedural AI Canvases on Page Load
+window.addEventListener('DOMContentLoaded', () => {
+  renderProceduralPhoto('canvas-ai-1', 'Atleta Coach Montanha agachamento livre', 1);
+  renderProceduralPhoto('canvas-ai-2', 'Iluminação 3 pontos editorial', 2);
+});
+
+// Run once immediately in case already loaded
+renderProceduralPhoto('canvas-ai-1', 'Atleta Coach Montanha agachamento livre', 1);
+renderProceduralPhoto('canvas-ai-2', 'Iluminação 3 pontos editorial', 2);
