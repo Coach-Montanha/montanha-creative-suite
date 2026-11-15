@@ -242,12 +242,57 @@ Se a sua técnica é fraca, o seu resultado será fraco. Ajuste a postura e domi
                 </div>
                 <div>
                   <label class="input-label">Áudio de Fundo (BGM)</label>
-                  <select class="input-select">
+                  <select class="input-select" id="video-bgm-select">
                     <option selected>Dark Epic Trap (Leve)</option>
                     <option>Hard Rock Workout</option>
                     <option>Sem Música (Apenas Voz)</option>
                   </select>
                 </div>
+              </div>
+
+              <!-- MotionMaxxing / OneTake Code-driven Motion Graphics -->
+              <div class="form-row-2" style="margin-top:4px;">
+                <div>
+                  <label class="input-label">⚡ MotionMaxxing (60 FPS)</label>
+                  <select class="input-select" id="motionmaxxing-select" onchange="updateMotionOverlay(this.value)">
+                    <option value="kinetic" selected>⚡ Tipografia Cinética Hormozi</option>
+                    <option value="timer">⏱️ Cronômetro Metcon / Descanso (60s)</option>
+                    <option value="rpe">📊 Card Biomecânico (RPE 9.0)</option>
+                    <option value="reps">🔥 Contador Séries & Repetições</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="input-label">💥 Earshot SFX (Efeito Sonoro)</label>
+                  <select class="input-select" id="earshot-sfx-select">
+                    <option value="drop" selected>💥 Heavy Barbell Drop (Impacto)</option>
+                    <option value="whoosh">⚡ Cinematic Whoosh (Transição)</option>
+                    <option value="beep">🔔 Beep de Cronômetro de Treino</option>
+                    <option value="heartbeat">🥁 Tensão / Heartbeat</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- MoneyPrinter B-Roll Keyword Detection Track -->
+              <div class="broll-auto-track" style="margin-top:14px; background:#10121a; border:1px solid var(--border-subtle); padding:10px 12px; border-radius:var(--radius-sm);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:11px; font-weight:800; color:var(--primary-light); text-transform:uppercase; letter-spacing:0.05em;">
+                    🎞️ B-Roll Inteligente (MoneyPrinter Engine)
+                  </span>
+                  <span style="font-size:10px; color:var(--text-secondary);" id="broll-catalog-status">Acervo: 3.405 exercícios</span>
+                </div>
+                <div class="broll-chips-row" id="broll-chips-container" style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <span class="chip-sm active">🏋️ 0:00-0:12: Agachamento Livre</span>
+                  <span class="chip-sm">⚡ 0:12-0:25: Torque & Lombar</span>
+                  <span class="chip-sm">🔥 0:25-0:38: Postura & Execução</span>
+                </div>
+              </div>
+
+              <!-- Cobalt B-Roll Harvester -->
+              <div class="cobalt-harvester-box" style="margin-top:10px; display:flex; gap:8px;">
+                <input type="text" class="input-text" id="cobalt-url-input" placeholder="Colar link do Instagram/YouTube para importar B-Roll (Cobalt)..." style="font-size:12px !important; padding:8px 12px;">
+                <button class="btn btn-secondary btn-sm" id="btn-cobalt-fetch" style="white-space:nowrap;">
+                  📥 Importar B-Roll
+                </button>
               </div>
 
               <div class="action-buttons-box">
@@ -269,6 +314,11 @@ Se a sua técnica é fraca, o seu resultado será fraco. Ajuste a postura e domi
                 <span class="badge-pill">TAXA: 60 FPS</span>
               </div>
               <div class="video-screen">
+                <!-- MotionMaxxing Dynamic 60 FPS Visual Layer -->
+                <div id="motionmaxxing-overlay-layer" style="position:absolute; top:24px; left:0; right:0; z-index:3; display:flex; justify-content:center; pointer-events:none;">
+                  <div id="motion-element-container"></div>
+                </div>
+
                 <div class="video-overlay-elements">
                   <div class="video-badge-tag">COACH MONTANA &bull; MÉTODO PRO</div>
                   <div class="subtitle-preview-box">
@@ -277,7 +327,7 @@ Se a sua técnica é fraca, o seu resultado será fraco. Ajuste a postura e domi
                 </div>
                 <div class="video-media-bg">
                   <div class="simulated-workout-scene">
-                    <div class="scene-text">🏋️ VÍDEO B-ROLL COM VISUAL HIGH-TECH CINEMATOGRÁFICO</div>
+                    <div class="scene-text" id="video-scene-tag">🏋️ VÍDEO B-ROLL COM VISUAL HIGH-TECH CINEMATOGRÁFICO</div>
                   </div>
                 </div>
               </div>
@@ -305,14 +355,34 @@ Se a sua técnica é fraca, o seu resultado será fraco. Ajuste a postura e domi
           <!-- Photo Tools Sidebar -->
           <div class="photo-sidebar">
             <div class="sub-nav-tabs">
-              <button class="sub-tab active">Ajustes</button>
-              <button class="sub-tab">Filtros Pro</button>
-              <button class="sub-tab">Colagens</button>
-              <button class="sub-tab">Divisor Feed</button>
-              <button class="sub-tab">GIF</button>
+              <button class="sub-tab active" data-photosub="adjust">Ajustes</button>
+              <button class="sub-tab" data-photosub="kokon" style="color:var(--primary-light); font-weight:800;">✨ Kokon IA</button>
+              <button class="sub-tab" data-photosub="filters">Filtros Pro</button>
+              <button class="sub-tab" data-photosub="collage">Colagens</button>
+              <button class="sub-tab" data-photosub="grid">Divisor Feed</button>
             </div>
 
-            <div class="controls-accordion">
+            <!-- Kokon-Photo Natural Language Box -->
+            <div id="kokon-photo-box" style="margin-bottom:14px; background:#10121a; border:1px solid rgba(245, 158, 11, 0.35); padding:12px; border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:11px; font-weight:800; color:var(--primary-light); text-transform:uppercase; letter-spacing:0.05em;">
+                  ✨ Kokon-Photo (Edição por Texto)
+                </span>
+                <span style="font-size:9px; background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:2px 6px; border-radius:4px; font-weight:700;">100% LOCAL</span>
+              </div>
+              <input type="text" class="input-text" id="kokon-prompt-input" placeholder="Ex: 'Mais contraste muscular, luz dourada e vinheta'..." style="font-size:12px !important; padding:8px 10px; margin-bottom:8px;">
+              <button class="btn btn-primary btn-block btn-sm" id="btn-apply-kokon">
+                ⚡ Aplicar Transformação Kokon
+              </button>
+              <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:8px;">
+                <button class="chip-sm" onclick="applyKokonPreset('muscle')">🔥 Foco Muscular</button>
+                <button class="chip-sm" onclick="applyKokonPreset('gold')">🌅 Golden Hour</button>
+                <button class="chip-sm" onclick="applyKokonPreset('obsidian')">🌑 Dark Titan</button>
+                <button class="chip-sm" onclick="applyKokonPreset('isolate')">⚡ Foco Atleta</button>
+              </div>
+            </div>
+
+            <div class="controls-accordion" id="photo-sliders-container">
               <div class="slider-group">
                 <label>Brilho <span class="val">+12%</span></label>
                 <input type="range" min="-100" max="100" value="12" class="range-slider">

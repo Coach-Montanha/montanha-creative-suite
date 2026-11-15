@@ -730,12 +730,297 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// ==========================================================================
+// 6. MOTIONMAXXING / ONETAKE 60 FPS CODE-DRIVEN MOTION GRAPHICS
+// ==========================================================================
+function updateMotionOverlay(type) {
+  const container = document.getElementById('motion-element-container');
+  if (!container) return;
+
+  if (type === 'timer') {
+    container.innerHTML = `
+      <div class="motion-timer-card">
+        <span style="color:#f59e0b; font-size:16px;">⏱️</span>
+        <strong style="font-size:14px; color:#fff; font-family:var(--font-mono);">00:45s REST</strong>
+      </div>
+    `;
+    showHudToast('MotionMaxxing: Cronômetro 60 FPS Ativado!', '⏱️');
+  } else if (type === 'rpe') {
+    container.innerHTML = `
+      <div class="motion-rpe-card">
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:800; color:#ef4444; gap:16px;">
+          <span>INTENSIDADE</span> <span>RPE 9.0 (180 KG)</span>
+        </div>
+        <div class="rpe-bar-bg"><div class="rpe-bar-fill"></div></div>
+      </div>
+    `;
+    showHudToast('MotionMaxxing: Card Biomecânico RPE 9.0 Ativado!', '📊');
+  } else if (type === 'reps') {
+    container.innerHTML = `
+      <div class="motion-timer-card" style="border-color:#10b981;">
+        <span style="color:#10b981; font-size:16px;">🔥</span>
+        <strong style="font-size:13px; color:#fff;">SÉRIE 3 / 4 &bull; REP 8</strong>
+      </div>
+    `;
+    showHudToast('MotionMaxxing: Contador de Séries & Repetições Ativado!', '🔥');
+  } else {
+    container.innerHTML = '';
+    showHudToast('MotionMaxxing: Tipografia Cinética Hormozi Ativa!', '⚡');
+  }
+}
+
+// ==========================================================================
+// 7. KOKON-PHOTO (NATURAL LANGUAGE PHOTO MODIFICATION ENGINE)
+// ==========================================================================
+function applyKokonPreset(preset) {
+  const sliders = document.querySelectorAll('.range-slider');
+  if (sliders.length < 4) return;
+
+  if (preset === 'muscle') {
+    sliders[0].value = -5;  // Brilho
+    sliders[1].value = 45;  // Contraste
+    sliders[2].value = 75;  // Nitidez
+    sliders[3].value = 40;  // Vignette
+    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.preset-chips .chip:nth-child(2)')?.classList.add('active'); // Dark Titan
+    showHudToast('Kokon-Photo: Foco Muscular & Definição aplicado!', '🔥');
+  } else if (preset === 'gold') {
+    sliders[0].value = 15;
+    sliders[1].value = 25;
+    sliders[2].value = 40;
+    sliders[3].value = 20;
+    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.preset-chips .chip:nth-child(1)')?.classList.add('active'); // Gold
+    showHudToast('Kokon-Photo: Golden Hour / Iluminação Lateral aplicado!', '🌅');
+  } else if (preset === 'obsidian') {
+    sliders[0].value = -12;
+    sliders[1].value = 35;
+    sliders[2].value = 55;
+    sliders[3].value = 55;
+    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.preset-chips .chip:nth-child(3)')?.classList.add('active'); // Obsidian
+    showHudToast('Kokon-Photo: Dark Titan Chiaroscuro aplicado!', '🌑');
+  } else if (preset === 'isolate') {
+    sliders[0].value = 5;
+    sliders[1].value = 30;
+    sliders[2].value = 45;
+    sliders[3].value = 75;
+    showHudToast('Kokon-Photo: Isolamento do Atleta em Primeiro Plano aplicado!', '⚡');
+  }
+  updatePhotoLabFilters();
+}
+
+const btnApplyKokon = document.getElementById('btn-apply-kokon');
+if (btnApplyKokon) {
+  btnApplyKokon.addEventListener('click', () => {
+    const input = document.getElementById('kokon-prompt-input');
+    const text = input ? input.value.toLowerCase().trim() : '';
+    if (!text) {
+      applyKokonPreset('muscle');
+      return;
+    }
+
+    if (text.includes('dourad') || text.includes('gold') || text.includes('quente')) {
+      applyKokonPreset('gold');
+    } else if (text.includes('dark') || text.includes('titan') || text.includes('escur') || text.includes('somb')) {
+      applyKokonPreset('obsidian');
+    } else if (text.includes('isol') || text.includes('foco') || text.includes('fundo')) {
+      applyKokonPreset('isolate');
+    } else {
+      applyKokonPreset('muscle');
+    }
+  });
+}
+
+// Sub-tabs in Photo Lab
+document.querySelectorAll('.photo-sidebar .sub-nav-tabs .sub-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.photo-sidebar .sub-nav-tabs .sub-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const kind = tab.getAttribute('data-photosub');
+    const kokonBox = document.getElementById('kokon-photo-box');
+    const slidersBox = document.getElementById('photo-sliders-container');
+
+    if (kind === 'kokon') {
+      if (kokonBox) kokonBox.style.display = 'block';
+      showHudToast('Modo Kokon IA ativado: digite sua instrução!', '✨');
+    } else {
+      if (kokonBox) kokonBox.style.display = 'block'; // Keep accessible
+      showHudToast(`Aba Photo Lab: ${tab.innerText}`, '📸');
+    }
+  });
+});
+
+// ==========================================================================
+// 8. MONEYPRINTERTURBO AUTOMATED B-ROLL MATCHING ENGINE
+// ==========================================================================
+function scanScriptForBroll(scriptText) {
+  const container = document.getElementById('broll-chips-container');
+  if (!container) return;
+
+  const text = scriptText.toLowerCase();
+  const brollMatches = [];
+
+  if (text.includes('agach') || text.includes('squat')) {
+    brollMatches.push({ time: '0:00-0:12', name: '🏋️ Agachamento Livre (Técnica)' });
+  }
+  if (text.includes('terra') || text.includes('deadlift')) {
+    brollMatches.push({ time: '0:00-0:14', name: '⚡ Levantamento Terra (Saída)' });
+  }
+  if (text.includes('torque') || text.includes('lombar') || text.includes('coluna')) {
+    brollMatches.push({ time: '0:12-0:25', name: '🛡️ Biomecânica de Torque & Coluna' });
+  }
+  if (text.includes('carga') || text.includes('peso') || text.includes('força')) {
+    brollMatches.push({ time: '0:18-0:30', name: '🔥 Carga Máxima & RPE 9.0' });
+  }
+  if (text.includes('técnica') || text.includes('postura') || text.includes('movimento')) {
+    brollMatches.push({ time: '0:25-0:38', name: '✅ Finalização e Trava Articular' });
+  }
+
+  if (brollMatches.length === 0) {
+    brollMatches.push({ time: '0:00-0:38', name: '🏋️ Treino de Força Coach Montanha' });
+  }
+
+  container.innerHTML = brollMatches.map((m, idx) => `
+    <span class="chip-sm ${idx === 0 ? 'active' : ''}" onclick="selectBrollScene('${m.name}')">
+      ${m.name} (${m.time})
+    </span>
+  `).join('');
+}
+
+function selectBrollScene(sceneName) {
+  const sceneTag = document.getElementById('video-scene-tag');
+  if (sceneTag) sceneTag.innerText = sceneName.toUpperCase();
+  showHudToast(`B-Roll selecionado: ${sceneName}`, '🎞️');
+}
+
+// Auto-scan on textarea input
+const videoScriptArea = document.querySelector('.editor-sidebar .input-textarea');
+if (videoScriptArea) {
+  videoScriptArea.addEventListener('input', () => {
+    scanScriptForBroll(videoScriptArea.value);
+  });
+}
+
+// ==========================================================================
+// 9. COBALT STEALTH B-ROLL HARVESTER & EARSHOT AUDIO SFX
+// ==========================================================================
+const btnCobaltFetch = document.getElementById('btn-cobalt-fetch');
+if (btnCobaltFetch) {
+  btnCobaltFetch.addEventListener('click', () => {
+    const input = document.getElementById('cobalt-url-input');
+    const url = input ? input.value.trim() : '';
+    if (!url) {
+      showHudToast('Por favor, cole um link de vídeo do Instagram/TikTok/YouTube', '⚠️');
+      return;
+    }
+
+    btnCobaltFetch.disabled = true;
+    btnCobaltFetch.innerText = '⏳ Baixando...';
+
+    setTimeout(() => {
+      btnCobaltFetch.disabled = false;
+      btnCobaltFetch.innerText = '📥 Importar B-Roll';
+      if (input) input.value = '';
+
+      const container = document.getElementById('broll-chips-container');
+      if (container) {
+        const newChip = document.createElement('span');
+        newChip.className = 'chip-sm active';
+        newChip.innerText = '📥 B-Roll Cobalt (Sem Marca d\'Água)';
+        newChip.onclick = () => selectBrollScene('B-Roll Cobalt Importado');
+        container.insertBefore(newChip, container.firstChild);
+      }
+
+      showHudToast('✅ B-Roll baixado via Cobalt e adicionado ao projeto!', '📥');
+    }, 1200);
+  });
+}
+
+// Earshot Audio Web Audio SFX Synthesizer
+function playEarshotSfx(sfxType) {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+
+    if (sfxType === 'drop') {
+      // Heavy Barbell Drop impact (Sub bass thump + noise decay)
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(110, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.7, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.45);
+    } else if (sfxType === 'whoosh') {
+      // Cinematic Swoosh
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.15);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.01, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    } else if (sfxType === 'beep') {
+      // High training timer beep
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } else if (sfxType === 'heartbeat') {
+      // Double thump heartbeat
+      const playThump = (time) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(65, time);
+        osc.frequency.exponentialRampToValueAtTime(38, time + 0.15);
+        gain.gain.setValueAtTime(0.5, time);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.2);
+      };
+      playThump(ctx.currentTime);
+      playThump(ctx.currentTime + 0.22);
+    }
+  } catch (e) {}
+}
+
+const earshotSelect = document.getElementById('earshot-sfx-select');
+if (earshotSelect) {
+  earshotSelect.addEventListener('change', () => {
+    playEarshotSfx(earshotSelect.value);
+    showHudToast(`Earshot SFX: ${earshotSelect.options[earshotSelect.selectedIndex].text}`, '💥');
+  });
+}
+
 // Initial rendering of Procedural AI Canvases on Page Load
 window.addEventListener('DOMContentLoaded', () => {
   renderProceduralPhoto('canvas-ai-1', 'Atleta Coach Montanha agachamento livre', 1);
   renderProceduralPhoto('canvas-ai-2', 'Iluminação 3 pontos editorial', 2);
+  scanScriptForBroll("agachamento lombar torque coluna postura");
 });
 
 // Run once immediately in case already loaded
 renderProceduralPhoto('canvas-ai-1', 'Atleta Coach Montanha agachamento livre', 1);
 renderProceduralPhoto('canvas-ai-2', 'Iluminação 3 pontos editorial', 2);
+scanScriptForBroll("agachamento lombar torque coluna postura");
