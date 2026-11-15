@@ -122,9 +122,17 @@ function generateRealAiPhoto(canvasId, promptText, variantNum, customSeed = null
   const seed = customSeed || Math.floor(Math.random() * 999999);
   let cleanPrompt = promptText.trim();
   if (!cleanPrompt.toLowerCase().includes('photo')) {
-    cleanPrompt = 'Cinematic professional photo, ' + cleanPrompt;
+    cleanPrompt = 'Cinematic authentic photo, ' + cleanPrompt;
   }
-  const fullPrompt = `${cleanPrompt}, Coach Montanha athletic physique, dark gym background, dramatic rim lighting, chiaroscuro, 8k resolution, highly detailed, photorealistic, fitness magazine editorial style, sharp focus`;
+
+  let styleAdditions = "Coach Montanha athletic physique, dark modern gym background, dramatic rim lighting, chiaroscuro, 8k resolution, highly detailed, photorealistic, fitness magazine editorial style, sharp focus";
+
+  if (cleanPrompt.includes('/nikeEditorial')) {
+    cleanPrompt = cleanPrompt.replace('/nikeEditorial', '').trim();
+    styleAdditions = "warm golden hour volumetric sunlight streaming through large vintage industrial multi-pane warehouse windows, visible god rays and illuminated airborne chalk dust particles, worn black rubber gym floor with chalk marks, dumbbell rack in soft background bokeh, shot on 35mm f/1.8 lens, natural skin texture with subtle sweat, authentic dynamic lighting, raw documentary photography, commercial fitness photoshoot style, 8k resolution, photorealistic, no cgi, no plastic look";
+  }
+
+  const fullPrompt = `${cleanPrompt}, ${styleAdditions}`;
 
   const encoded = encodeURIComponent(fullPrompt);
   const fluxUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1080&model=flux&nologo=true&seed=${seed}`;
