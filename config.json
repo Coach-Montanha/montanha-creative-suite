@@ -15,6 +15,9 @@
     "filmcraft": "C:\\Program Files\\FilmCraft\\filmcraft-cli.exe",
     "soundcraft": "C:\\Program Files\\SoundCraft\\soundcraft-cli.exe",
     "effectcraft": "C:\\Program Files\\EffectCraft\\effectcraft-cli.exe",
-    "lightcraft": "C:\\Program Files\\LightCraft\\lightcraft-cli.exe"
+    "lightcraft": "C:\\Program Files\\LightCraft\\lightcraft-cli.exe",
+    "photocraft": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
+    "vectorcraft": "C:\\Program Files\\VectorCraft\\vectorcraft-cli.exe",
+    "pdfcraft": "C:\\Program Files\\PdfCraft\\pdfcraft-cli.exe"
   }
 }

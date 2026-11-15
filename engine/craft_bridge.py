@@ -8,6 +8,7 @@ class CraftBridge:
         self.craft_engines = config.get("craft_engines", {})
         self.filmcraft_bin = self.craft_engines.get("filmcraft", r"C:\Program Files\FilmCraft\filmcraft-cli.exe")
         self.soundcraft_bin = self.craft_engines.get("soundcraft", r"C:\Program Files\SoundCraft\soundcraft-cli.exe")
+        self.photocraft_bin = self.craft_engines.get("photocraft", r"C:\Program Files\PhotoCraft\photocraft-cli.exe")
 
     def check_engines(self):
         status = {}
@@ -17,6 +18,18 @@ class CraftBridge:
                 "installed": os.path.exists(path)
             }
         return status
+
+    def convert_to_psd(self, input_png_or_jpg, output_psd):
+        """Usa PhotoCraft CLI para converter imagem em Adobe Photoshop PSD"""
+        if os.path.exists(self.photocraft_bin):
+            try:
+                cmd = [self.photocraft_bin, "convert", input_png_or_jpg, output_psd]
+                res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+                if res.returncode == 0 and os.path.exists(output_psd):
+                    return {"success": True, "output": output_psd, "engine": "PhotoCraft"}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+        return {"success": False, "error": "PhotoCraft CLI não encontrado"}
 
     def probe_media(self, media_path):
         """Usa FilmCraft probe se disponível, ou FFmpeg"""

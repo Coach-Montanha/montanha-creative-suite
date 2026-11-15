@@ -1,9 +1,23 @@
 {
+  "app_name": "Montanha Creative Suite Pro",
+  "version": "3.0.0",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "gdrive_path": "H:\\Meu Drive",
+  "custom_scripts_path": "H:\\Meu Drive\\Montanha Media Lab\\Roteiros",
+  "media_lab_path": "C:\\Users\\Administrator\\Documents\\Projetos\\montanha-media-lab",
   "output_dir": "./output",
   "temp_dir": "./temp",
-  "gdrive_scripts_dir": "H:\\Meu Drive\\Montanha Media Lab\\Roteiros",
-  "gdrive_videos_dir": "H:\\Meu Drive\\Montanha Media Lab\\Videos Renderizados",
   "default_voice": "pt-BR-AntonioNeural",
   "default_format": "9:16",
-  "soundcraft_enabled": true
+  "soundcraft_enabled": true,
+  "craft_engines": {
+    "filmcraft": "C:\\Program Files\\FilmCraft\\filmcraft-cli.exe",
+    "soundcraft": "C:\\Program Files\\SoundCraft\\soundcraft-cli.exe",
+    "effectcraft": "C:\\Program Files\\EffectCraft\\effectcraft-cli.exe",
+    "lightcraft": "C:\\Program Files\\LightCraft\\lightcraft-cli.exe",
+    "photocraft": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
+    "vectorcraft": "C:\\Program Files\\VectorCraft\\vectorcraft-cli.exe",
+    "pdfcraft": "C:\\Program Files\\PdfCraft\\pdfcraft-cli.exe"
+  }
 }

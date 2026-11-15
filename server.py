@@ -205,6 +205,46 @@ class SuiteHandler(SimpleHTTPRequestHandler):
             seed = body.get("seed")
             self.send_json(IMAGES.submit(prompt=prompt, aspect=aspect, seed=seed))
 
+        elif path == "/api/artcraft/export-psd":
+            cfg = load_config()
+            image_data = body.get("image", "")
+            if not image_data:
+                self.send_json({"success": False, "error": "Imagem vazia"})
+                return
+
+            import base64, uuid
+            if "," in image_data:
+                image_data = image_data.split(",")[1]
+            temp_dir = cfg.get("temp_dir", os.path.join(BASE_DIR, "temp"))
+            os.makedirs(temp_dir, exist_ok=True)
+            temp_id = uuid.uuid4().hex[:8]
+            temp_png = os.path.join(temp_dir, f"export_{temp_id}.png")
+            temp_psd = os.path.join(temp_dir, f"export_{temp_id}.psd")
+
+            try:
+                with open(temp_png, "wb") as f:
+                    f.write(base64.b64decode(image_data))
+                craft = CraftBridge(cfg)
+                res = craft.convert_to_psd(temp_png, temp_psd)
+                if res.get("success") and os.path.exists(temp_psd):
+                    with open(temp_psd, "rb") as pf:
+                        psd_bytes = pf.read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/x-photoshop")
+                    self.send_header("Content-Disposition", f'attachment; filename="montanha_creative_{temp_id}.psd"')
+                    self.send_header("Content-Length", str(len(psd_bytes)))
+                    self.end_headers()
+                    self.wfile.write(psd_bytes)
+                else:
+                    self.send_json({"success": False, "error": res.get("error", "Falha na conversao PSD")})
+            except Exception as e:
+                self.send_json({"success": False, "error": str(e)})
+            finally:
+                for p in (temp_png, temp_psd):
+                    if os.path.exists(p):
+                        try: os.remove(p)
+                        except Exception: pass
+
         else:
             self.send_error(404, "Unknown API route")
 
