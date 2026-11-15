@@ -1,0 +1,9 @@
+{
+  "output_dir": "./output",
+  "temp_dir": "./temp",
+  "gdrive_scripts_dir": "H:\\Meu Drive\\Montanha Media Lab\\Roteiros",
+  "gdrive_videos_dir": "H:\\Meu Drive\\Montanha Media Lab\\Videos Renderizados",
+  "default_voice": "pt-BR-AntonioNeural",
+  "default_format": "9:16",
+  "soundcraft_enabled": true
+}

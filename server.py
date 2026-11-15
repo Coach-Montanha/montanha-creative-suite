@@ -3,15 +3,24 @@ import sys
 import json
 import urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
-from engine import MediaBridge, CraftBridge, MotionEngine, NeuralEngine, DownloaderEngine
+from engine import MediaBridge, CraftBridge, MotionEngine, NeuralEngine, DownloaderEngine, ImageService
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+AI_CACHE_DIR = os.path.join(BASE_DIR, "temp", "ai_cache")
+IMAGES = ImageService(AI_CACHE_DIR)
+ALLOWED_CONFIG_KEYS = {
+    "output_dir", "temp_dir", "gdrive_scripts_dir", "gdrive_videos_dir",
+    "default_voice", "default_format", "soundcraft_enabled"
+}
 
 def load_config():
     if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
     return {
         "output_dir": os.path.join(BASE_DIR, "output"),
         "temp_dir": os.path.join(BASE_DIR, "temp"),
@@ -29,6 +38,44 @@ def save_config(cfg):
 class SuiteHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
+
+    def origin_ok(self):
+        """Bloqueia chamadas externas maliciosas (CSRF / DNS rebinding)."""
+        server_port = self.server.server_address[1]
+        valid_hosts = {
+            f"127.0.0.1:{server_port}",
+            f"localhost:{server_port}",
+            "127.0.0.1",
+            "localhost"
+        }
+        host = self.headers.get("Host", "")
+        if host not in valid_hosts:
+            return False
+        origin = self.headers.get("Origin")
+        if origin is None:
+            return True
+        clean_origin = origin.replace("http://", "").replace("https://", "")
+        return clean_origin in valid_hosts
+
+    def serve_ai_image(self, image_id):
+        path = IMAGES.image_path(image_id)
+        if not path:
+            self.send_error(404, "Imagem não encontrada")
+            return
+        ext = os.path.splitext(path)[1].lower()
+        mime_map = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+        mime = mime_map.get(ext, "application/octet-stream")
+        self.send_response(200)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(os.path.getsize(path)))
+        self.send_header("Cache-Control", "private, max-age=86400")
+        self.end_headers()
+        with open(path, "rb") as f:
+            while True:
+                chunk = f.read(1024 * 1024)
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
@@ -50,13 +97,19 @@ class SuiteHandler(SimpleHTTPRequestHandler):
             bridge = MediaBridge(cfg)
             folder = query.get("folder", [None])[0]
             self.send_json(bridge.list_gdrive_scripts(folder=folder))
+        elif path == "/api/ai/job":
+            job_id = query.get("id", [""])[0]
+            self.send_json(IMAGES.get(job_id))
+        elif path == "/api/ai/image":
+            image_id = query.get("id", [""])[0]
+            self.serve_ai_image(image_id)
         elif path == "/api/videos":
             cfg = load_config()
             out_dir = cfg.get("output_dir", os.path.join(BASE_DIR, "output"))
             videos = []
             if os.path.exists(out_dir):
                 for f in os.listdir(out_dir):
-                    if f.endswith((".mp4", ".mov", ".webm", ".png", ".jpg")):
+                    if f.endswith((".mp4", ".mov", ".webm", ".png", ".jpg", ".webp")):
                         full = os.path.join(out_dir, f)
                         videos.append({
                             "name": f,
@@ -74,17 +127,29 @@ class SuiteHandler(SimpleHTTPRequestHandler):
                 return
             cfg = load_config()
             out_dir = cfg.get("output_dir", os.path.join(BASE_DIR, "output"))
-            file_path = os.path.join(out_dir, os.path.basename(filename))
+            safe_name = os.path.basename(filename)
+            file_path = os.path.join(out_dir, safe_name)
             if os.path.exists(file_path):
                 ext = os.path.splitext(file_path)[1].lower()
-                mime = "video/mp4" if ext in (".mp4", ".mov") else "image/png"
+                mime = "application/octet-stream"
+                if ext in (".mp4", ".mov"): mime = "video/mp4"
+                elif ext == ".webm": mime = "video/webm"
+                elif ext in (".jpg", ".jpeg"): mime = "image/jpeg"
+                elif ext == ".png": mime = "image/png"
+                elif ext == ".webp": mime = "image/webp"
+
                 self.send_response(200)
                 self.send_header("Content-Type", mime)
                 self.send_header("Content-Length", str(os.path.getsize(file_path)))
-                self.send_header("Content-Disposition", f'inline; filename="{os.path.basename(file_path)}"')
+                self.send_header("Content-Disposition", f'inline; filename="{safe_name}"')
                 self.end_headers()
+                # Streaming em blocos de 1MB para não estourar a RAM
                 with open(file_path, "rb") as vf:
-                    self.wfile.write(vf.read())
+                    while True:
+                        chunk = vf.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
             else:
                 self.send_error(404, "File not found")
         else:
@@ -93,6 +158,10 @@ class SuiteHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+
+        if not self.origin_ok():
+            self.send_error(403, "Origem não permitida")
+            return
 
         content_length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(content_length) if content_length > 0 else b"{}"
@@ -104,7 +173,10 @@ class SuiteHandler(SimpleHTTPRequestHandler):
 
         if path == "/api/config":
             cfg = load_config()
-            cfg.update(body)
+            # Allowlist estrita de chaves de configuração
+            for k, v in body.items():
+                if k in ALLOWED_CONFIG_KEYS:
+                    cfg[k] = v
             save_config(cfg)
             self.send_json({"success": True, "config": cfg})
 
@@ -130,7 +202,8 @@ class SuiteHandler(SimpleHTTPRequestHandler):
         elif path == "/api/ai/text2photo":
             prompt = body.get("prompt", "")
             aspect = body.get("aspect", "1:1")
-            self.send_json({"success": True, "prompt": prompt, "aspect": aspect, "message": "Geração simulada localmente com sucesso"})
+            seed = body.get("seed")
+            self.send_json(IMAGES.submit(prompt=prompt, aspect=aspect, seed=seed))
 
         else:
             self.send_error(404, "Unknown API route")
@@ -138,7 +211,8 @@ class SuiteHandler(SimpleHTTPRequestHandler):
     def send_json(self, data, status=200):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        server_port = self.server.server_address[1]
+        self.send_header("Access-Control-Allow-Origin", f"http://127.0.0.1:{server_port}")
         self.end_headers()
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
 

@@ -7,6 +7,11 @@ Data/portable_trace.log
 __pycache__/
 *.pyc
 
-# Local environments
+# Local binary releases and configuration
+MontanhaCreativeSuite.exe
+config.json
+
+# Local environments and secrets
 .env
 .venv/
+secrets.json

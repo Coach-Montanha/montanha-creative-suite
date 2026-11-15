@@ -3,5 +3,6 @@ from .craft_bridge import CraftBridge
 from .motion_engine import MotionEngine
 from .neural_engine import NeuralEngine
 from .downloader_engine import DownloaderEngine
+from .image_gen import ImageService
 
-__all__ = ["MediaBridge", "CraftBridge", "MotionEngine", "NeuralEngine", "DownloaderEngine"]
+__all__ = ["MediaBridge", "CraftBridge", "MotionEngine", "NeuralEngine", "DownloaderEngine", "ImageService"]

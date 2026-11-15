@@ -109,39 +109,76 @@ function drawCanvasLoading(canvasId, variantNum) {
   ctx.textAlign = 'left';
 }
 
-function generateRealAiPhoto(canvasId, promptText, variantNum, customSeed = null) {
+const AI_ASPECTS = [["1:1", 1], ["4:5", 0.8], ["3:4", 0.75], ["9:16", 0.5625], ["16:9", 16 / 9]];
+const aiRuns = new Map(); // canvasId -> AbortController (cancela geração anterior no mesmo canvas)
+
+function nearestAspect(w, h) {
+  const r = w / h;
+  return AI_ASPECTS.reduce((best, cur) =>
+    Math.abs(cur[1] - r) < Math.abs(best[1] - r) ? cur : best)[0];
+}
+
+function drawCover(ctx, img, w, h) {
+  const s = Math.max(w / img.width, h / img.height);
+  const dw = img.width * s, dh = img.height * s;
+  ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Falha ao carregar a imagem gerada"));
+    img.src = src;
+  });
+}
+
+async function postJson(url, body, signal) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!res.ok) throw new Error("Servidor local respondeu " + res.status);
+  return res.json();
+}
+
+async function waitForJob(jobId, signal, timeoutMs = 180000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < timeoutMs) {
+    const res = await fetch("/api/ai/job?id=" + encodeURIComponent(jobId), { signal });
+    const job = await res.json();
+    if (job.status === "done") return job;
+    if (job.status === "error") throw new Error(job.error || "Falha na geração");
+    await new Promise(r => setTimeout(r, 1200));
+  }
+  throw new Error("Tempo esgotado aguardando a imagem");
+}
+
+async function generateRealAiPhoto(canvasId, promptText, variantNum, customSeed = null) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width;
-  const h = canvas.height;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+
+  if (aiRuns.has(canvasId)) aiRuns.get(canvasId).abort();
+  const ctrl = new AbortController();
+  aiRuns.set(canvasId, ctrl);
 
   drawCanvasLoading(canvasId, variantNum);
 
-  // Enhance prompt for maximum photorealism & Coach Montanha athletic style
-  const seed = customSeed || Math.floor(Math.random() * 999999);
-  let cleanPrompt = promptText.trim();
-  if (!cleanPrompt.toLowerCase().includes('photo')) {
-    cleanPrompt = 'Cinematic authentic photo, ' + cleanPrompt;
-  }
+  try {
+    const job = await postJson("/api/ai/text2photo", {
+      prompt: promptText,
+      aspect: nearestAspect(w, h),
+      seed: customSeed,
+    }, ctrl.signal);
+    if (job.status === "error") throw new Error(job.error);
 
-  let styleAdditions = "Coach Montanha athletic physique, dark modern gym background, dramatic rim lighting, chiaroscuro, 8k resolution, highly detailed, photorealistic, fitness magazine editorial style, sharp focus";
-
-  if (cleanPrompt.includes('/nikeEditorial')) {
-    cleanPrompt = cleanPrompt.replace('/nikeEditorial', '').trim();
-    styleAdditions = "warm golden hour volumetric sunlight streaming through large vintage industrial multi-pane warehouse windows, visible god rays and illuminated airborne chalk dust particles, worn black rubber gym floor with chalk marks, dumbbell rack in soft background bokeh, shot on 35mm f/1.8 lens, natural skin texture with subtle sweat, authentic dynamic lighting, raw documentary photography, commercial fitness photoshoot style, 8k resolution, photorealistic, no cgi, no plastic look";
-  }
-
-  const fullPrompt = `${cleanPrompt}, ${styleAdditions}`;
-
-  const encoded = encodeURIComponent(fullPrompt);
-  const fluxUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1080&model=flux&nologo=true&seed=${seed}`;
-
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0, w, h);
+    const done = job.status === "done" ? job : await waitForJob(job.job_id, ctrl.signal);
+    const img = await loadImage("/api/ai/image?id=" + encodeURIComponent(done.image_id));
+    drawCover(ctx, img, w, h);
 
     // Sleek Badge Overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
@@ -153,28 +190,24 @@ function generateRealAiPhoto(canvasId, promptText, variantNum, customSeed = null
 
     ctx.font = 'bold 11px -apple-system, sans-serif';
     ctx.fillStyle = variantNum === 1 ? '#fbbf24' : '#38bdf8';
-    ctx.fillText(`⚡ FOTO REAL FLUX.1 • VARIAÇÃO ${variantNum}`, 28, h - 28);
+    ctx.fillText(`⚡ FOTO REAL IA • VARIAÇÃO ${variantNum} (${done.provider})`, 28, h - 28);
 
     ctx.font = '10px -apple-system, sans-serif';
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText('8K Photorealistic &bull; Coach Montanha Style', 240, h - 28);
+    ctx.fillText('8K Photorealistic &bull; Coach Montanha Style', 260, h - 28);
 
-    showHudToast(`✅ Variação ${variantNum} pronta com qualidade fotográfica!`, "📸");
-  };
-
-  img.onerror = () => {
-    // If offline or blocked, load local sample photo
-    const fallbackImg = new Image();
-    fallbackImg.src = variantNum === 1 ? 'sample_flux_1.jpg' : 'sample_flux_2.jpg';
-    fallbackImg.onload = () => {
-      ctx.drawImage(fallbackImg, 0, 0, w, h);
-    };
-    fallbackImg.onerror = () => {
-      renderProceduralPhoto(canvasId, promptText, variantNum);
-    };
-  };
-
-  img.src = fluxUrl;
+    showHudToast(`✅ Variação ${variantNum} pronta (${done.provider})`, "📸");
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    console.error("[IA foto]", err);
+    try {
+      const sample = await loadImage(variantNum === 1 ? "sample_flux_1.jpg" : "sample_flux_2.jpg");
+      drawCover(ctx, sample, w, h);
+    } catch (_) { }
+    showHudToast(`⚠️ Não foi possível gerar: ${err.message}`, "⚠️");
+  } finally {
+    if (aiRuns.get(canvasId) === ctrl) aiRuns.delete(canvasId);
+  }
 }
 
 function renderProceduralPhoto(canvasId, promptText, variantNum) {
