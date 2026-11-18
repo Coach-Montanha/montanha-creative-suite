@@ -40,6 +40,10 @@ namespace MontanhaCreativeSuite
                 // 1. Garante que o servidor Python está rodando na porta 8765
                 if (!IsServerRunning())
                 {
+                    log("Servidor não está respondendo. Liberando porta se necessário...");
+                    EnsurePortFree(Port);
+                    Thread.Sleep(300);
+
                     string serverScript = Path.Combine(baseDir, "server.py");
                     if (File.Exists(serverScript))
                     {
@@ -169,6 +173,23 @@ namespace MontanhaCreativeSuite
             catch { }
 
             return null;
+        }
+
+        private static void EnsurePortFree(int port)
+        {
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.FileName = "cmd.exe";
+                psi.Arguments = string.Format("/c for /f \"tokens=5\" %a in ('netstat -aon ^| findstr \":{0}\" ^| findstr \"LISTENING\"') do taskkill /F /PID %a", port);
+                psi.CreateNoWindow = true;
+                psi.UseShellExecute = false;
+                using (Process p = Process.Start(psi))
+                {
+                    p.WaitForExit(3000);
+                }
+            }
+            catch {}
         }
     }
 }
