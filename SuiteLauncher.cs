@@ -27,14 +27,27 @@ namespace MontanhaCreativeSuite
 
             try
             {
+                string logFile = Path.Combine(baseDir, "Data", "launcher.log");
+                string dataDir = Path.Combine(baseDir, "Data");
+                if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
+
+                Action<string> log = (msg) => {
+                    try { File.AppendAllText(logFile, string.Format("[{0:HH:mm:ss.fff}] {1}\r\n", DateTime.Now, msg)); } catch {}
+                };
+
+                log("Iniciando Montanha Creative Suite...");
+
                 // 1. Garante que o servidor Python está rodando na porta 8765
                 if (!IsServerRunning())
                 {
                     string serverScript = Path.Combine(baseDir, "server.py");
                     if (File.Exists(serverScript))
                     {
+                        string pyPath = FindPythonPath();
+                        log("Iniciando server.py com: " + pyPath);
+
                         ProcessStartInfo pyPsi = new ProcessStartInfo();
-                        pyPsi.FileName = FindPythonPath();
+                        pyPsi.FileName = pyPath;
                         pyPsi.Arguments = string.Format("\"{0}\" {1}", serverScript, Port);
                         pyPsi.WorkingDirectory = baseDir;
                         pyPsi.CreateNoWindow = true;
@@ -42,12 +55,30 @@ namespace MontanhaCreativeSuite
                         Process.Start(pyPsi);
                     }
 
-                    // Aguarda o servidor responder na porta 8765 (máx 6 segundos)
-                    for (int i = 0; i < 30; i++)
+                    // Aguarda o servidor responder na porta 8765 (máx 10 segundos)
+                    bool serverReady = false;
+                    for (int i = 0; i < 50; i++)
                     {
                         Thread.Sleep(200);
-                        if (IsServerRunning()) break;
+                        if (IsServerRunning())
+                        {
+                            serverReady = true;
+                            log(string.Format("Servidor pronto após {0}ms", (i + 1) * 200));
+                            break;
+                        }
                     }
+
+                    if (!serverReady)
+                    {
+                        log("ERRO: Servidor local não respondeu a tempo.");
+                        MessageBox.Show("O servidor local do Montanha Creative Suite não respondeu a tempo na porta 8765.\nVerifique se o Python está instalado ou consulte Data\\server.log.",
+                            "Montanha Creative Suite", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+                else
+                {
+                    log("Servidor já estava ativo na porta 8765.");
                 }
 
                 // 2. Lança Microsoft Edge em modo de Janela de Aplicativo Nativo
@@ -55,6 +86,7 @@ namespace MontanhaCreativeSuite
                 string profileDir = Path.Combine(baseDir, "Data", "Profile");
                 if (!Directory.Exists(profileDir)) Directory.CreateDirectory(profileDir);
 
+                log("Abrindo Edge: " + appUrl);
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.FileName = edgePath;
                 psi.Arguments = string.Format("--app=\"{0}\" --window-size=1440,900 --user-data-dir=\"{1}\" --app-id=MontanhaCreativeSuite", appUrl, profileDir);
@@ -72,7 +104,7 @@ namespace MontanhaCreativeSuite
             try
             {
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(string.Format("http://127.0.0.1:{0}/api/config", Port));
-                req.Timeout = 600;
+                req.Timeout = 1000;
                 req.Method = "GET";
                 using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
                 {
@@ -91,10 +123,10 @@ namespace MontanhaCreativeSuite
             string[] versions = new string[] { "Python311", "Python312", "Python310", "Python39", "Python38" };
             foreach (string v in versions)
             {
-                string pw = Path.Combine(localApp, string.Format(@"Programs\Python\{0}\pythonw.exe", v));
-                if (File.Exists(pw)) return pw;
                 string p = Path.Combine(localApp, string.Format(@"Programs\Python\{0}\python.exe", v));
                 if (File.Exists(p)) return p;
+                string pw = Path.Combine(localApp, string.Format(@"Programs\Python\{0}\pythonw.exe", v));
+                if (File.Exists(pw)) return pw;
             }
 
             string pathEnv = Environment.GetEnvironmentVariable("PATH");
@@ -105,14 +137,14 @@ namespace MontanhaCreativeSuite
                     string trimmed = dir.Trim();
                     if (!string.IsNullOrEmpty(trimmed))
                     {
-                        string candidateW = Path.Combine(trimmed, "pythonw.exe");
-                        if (File.Exists(candidateW)) return candidateW;
                         string candidate = Path.Combine(trimmed, "python.exe");
                         if (File.Exists(candidate)) return candidate;
+                        string candidateW = Path.Combine(trimmed, "pythonw.exe");
+                        if (File.Exists(candidateW)) return candidateW;
                     }
                 }
             }
-            return "pythonw";
+            return "python";
         }
 
         private static string FindEdgePath()

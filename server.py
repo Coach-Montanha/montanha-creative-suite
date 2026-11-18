@@ -3,9 +3,33 @@ import sys
 import json
 import urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
-from engine import MediaBridge, CraftBridge, MotionEngine, NeuralEngine, DownloaderEngine, ImageService
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "Data")
+os.makedirs(DATA_DIR, exist_ok=True)
+SERVER_LOG = os.path.join(DATA_DIR, "server.log")
+
+# Blindagem contra crash no pythonw (sys.stdout/stderr nulos causam ERR_EMPTY_RESPONSE)
+class SafeLogWriter:
+    def __init__(self, filepath):
+        self.filepath = filepath
+    def write(self, text):
+        try:
+            if text:
+                with open(self.filepath, "a", encoding="utf-8") as f:
+                    f.write(text)
+        except Exception:
+            pass
+    def flush(self):
+        pass
+
+if sys.stdout is None or not hasattr(sys.stdout, "write"):
+    sys.stdout = SafeLogWriter(SERVER_LOG)
+if sys.stderr is None or not hasattr(sys.stderr, "write"):
+    sys.stderr = SafeLogWriter(SERVER_LOG)
+
+from engine import MediaBridge, CraftBridge, MotionEngine, NeuralEngine, DownloaderEngine, ImageService
+
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 AI_CACHE_DIR = os.path.join(BASE_DIR, "temp", "ai_cache")
 IMAGES = ImageService(AI_CACHE_DIR)
@@ -38,6 +62,15 @@ def save_config(cfg):
 class SuiteHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
+
+    def log_message(self, format, *args):
+        """Grava log de forma segura sem quebrar quando rodando desacoplado."""
+        try:
+            line = "%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args)
+            if sys.stderr and hasattr(sys.stderr, "write"):
+                sys.stderr.write(line)
+        except Exception:
+            pass
 
     def origin_ok(self):
         """Bloqueia chamadas externas maliciosas (CSRF / DNS rebinding)."""
