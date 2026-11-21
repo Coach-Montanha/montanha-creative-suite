@@ -1,5 +1,5 @@
 // ==========================================================================
-// MONTANHA CREATIVE SUITE PRO — FULL FUNCTIONAL INTERACTION ENGINE
+// MONTANHA CREATIVE PRO — FULL FUNCTIONAL INTERACTION ENGINE
 // All buttons, generators, exports, audio previews and canvas tools wired.
 // ==========================================================================
 

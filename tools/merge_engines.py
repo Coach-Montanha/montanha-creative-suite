@@ -3,7 +3,7 @@ import os
 
 src_video = r"C:\Users\Administrator\Documents\Projetos\Montanha Video Studio"
 src_photo = r"C:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Photo Lab"
-dest_suite = r"C:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative Suite"
+dest_suite = r"C:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative"
 
 # 1. Copiar engine de vídeo
 src_engine = os.path.join(src_video, "engine")

@@ -8,6 +8,7 @@ __pycache__/
 *.pyc
 
 # Local binary releases and configuration
+MontanhaCreative.exe
 MontanhaCreativeSuite.exe
 config.json
 

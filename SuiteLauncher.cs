@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace MontanhaCreativeSuite
+namespace MontanhaCreative
 {
     static class Program
     {
@@ -20,8 +20,8 @@ namespace MontanhaCreativeSuite
 
             if (string.IsNullOrEmpty(edgePath) || !File.Exists(edgePath))
             {
-                MessageBox.Show("Microsoft Edge não foi encontrado no sistema.\nPor favor instale o Microsoft Edge para executar a Suite.",
-                    "Montanha Creative Suite", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Microsoft Edge não foi encontrado no sistema.\nPor favor instale o Microsoft Edge para executar o Montanha Creative.",
+                    "Montanha Creative", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace MontanhaCreativeSuite
                     try { File.AppendAllText(logFile, string.Format("[{0:HH:mm:ss.fff}] {1}\r\n", DateTime.Now, msg)); } catch {}
                 };
 
-                log("Iniciando Montanha Creative Suite...");
+                log("Iniciando Montanha Creative...");
 
                 // 1. Garante que o servidor Python está rodando na porta 8765
                 if (!IsServerRunning())
@@ -75,8 +75,8 @@ namespace MontanhaCreativeSuite
                     if (!serverReady)
                     {
                         log("ERRO: Servidor local não respondeu a tempo.");
-                        MessageBox.Show("O servidor local do Montanha Creative Suite não respondeu a tempo na porta 8765.\nVerifique se o Python está instalado ou consulte Data\\server.log.",
-                            "Montanha Creative Suite", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("O servidor local do Montanha Creative não respondeu a tempo na porta 8765.\nVerifique se o Python está instalado ou consulte Data\\server.log.",
+                            "Montanha Creative", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                 }
@@ -93,13 +93,13 @@ namespace MontanhaCreativeSuite
                 log("Abrindo Edge: " + appUrl);
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.FileName = edgePath;
-                psi.Arguments = string.Format("--app=\"{0}\" --window-size=1440,900 --user-data-dir=\"{1}\" --app-id=MontanhaCreativeSuite", appUrl, profileDir);
+                psi.Arguments = string.Format("--app=\"{0}\" --window-size=1440,900 --user-data-dir=\"{1}\" --app-id=MontanhaCreative", appUrl, profileDir);
                 psi.UseShellExecute = true;
                 Process.Start(psi);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao executar Montanha Creative Suite: " + ex.Message, "Montanha Suite", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Erro ao executar Montanha Creative: " + ex.Message, "Montanha Creative", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

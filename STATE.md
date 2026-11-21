@@ -1,6 +1,7 @@
-# 📊 Montanha Creative Suite Pro — Estado Atual (STATE.md)
+# 📊 Montanha Creative Pro — Estado Atual (STATE.md)
 
 ## Status do Projeto
+- **Nome Oficial**: Montanha Creative
 - **Versão**: 3.0.0 Pro
 - **Branch**: `main`
 - **Repositório Remoto**: `https://github.com/Coach-Montanha/montanha-creative-suite.git`
@@ -9,8 +10,8 @@
 ---
 
 ## Estrutura de Diretórios Ativa
-- `c:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative Suite\`
-  - `MontanhaCreativeSuite.exe`: Executável nativo C# com ícone embutido
+- `c:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative\`
+  - `MontanhaCreative.exe`: Executável nativo C# com ícone embutido
   - `SuiteLauncher.cs`: Código-fonte do inicializador
   - `server.py`: Servidor de backend com rotas de API
   - `cli_runner.py`: CLI para automações em lote
@@ -26,9 +27,11 @@
 ---
 
 ## Atalhos e Distribuição
-- `C:\Users\Administrator\Desktop\Montanha Creative Suite.lnk`
-- `C:\Users\Administrator\Desktop\[4] Design & Video\Montanha Creative Suite.lnk`
-- `c:\Users\Administrator\Documents\Projetos\Pasta de Programas e Apps\Montanha Creative Suite.lnk`
+- `C:\Users\Administrator\Desktop\Montanha Creative.lnk`
+- `C:\Users\Administrator\Desktop\[4] Design & Video\Montanha Creative.lnk`
+- `C:\Users\Administrator\Desktop\Atalhos\Montanha Creative.lnk`
+- `C:\Users\Administrator\Desktop\Atalhos\Editores de Vídeo\Montanha Creative.lnk`
+- `c:\Users\Administrator\Documents\Projetos\Pasta de Programas e Apps\Montanha Creative.lnk`
 
 ---
 

@@ -3,7 +3,7 @@ import asyncio
 from playwright.async_api import async_playwright
 
 async def main():
-    base_dir = r"C:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative Suite"
+    base_dir = r"C:\Users\Administrator\Documents\Projetos\Ecossistema Montanha\Montanha Creative"
     html_path = os.path.join(base_dir, "index.html")
     output_dir = os.path.join(base_dir, "screenshots")
     os.makedirs(output_dir, exist_ok=True)

@@ -291,7 +291,7 @@ class SuiteHandler(SimpleHTTPRequestHandler):
 
 def run_server(port=8765):
     server = ThreadingHTTPServer(("127.0.0.1", port), SuiteHandler)
-    print(f"⛰️ Montanha Creative Suite Server rodando em http://127.0.0.1:{port}/")
+    print(f"⛰️ Montanha Creative Server rodando em http://127.0.0.1:{port}/")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
