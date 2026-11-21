@@ -10,7 +10,7 @@ namespace MontanhaCreative
 {
     static class Program
     {
-        private const int Port = 8765;
+        private const int Port = 8780;
 
         [STAThread]
         static void Main()
@@ -37,7 +37,7 @@ namespace MontanhaCreative
 
                 log("Iniciando Montanha Creative...");
 
-                // 1. Garante que o servidor Python está rodando na porta 8765
+                // 1. Garante que o servidor Python está rodando na porta 8780
                 if (!IsServerRunning())
                 {
                     log("Servidor não está respondendo. Liberando porta se necessário...");
@@ -59,7 +59,7 @@ namespace MontanhaCreative
                         Process.Start(pyPsi);
                     }
 
-                    // Aguarda o servidor responder na porta 8765 (máx 10 segundos)
+                    // Aguarda o servidor responder na porta 8780 (máx 10 segundos)
                     bool serverReady = false;
                     for (int i = 0; i < 50; i++)
                     {
@@ -75,14 +75,14 @@ namespace MontanhaCreative
                     if (!serverReady)
                     {
                         log("ERRO: Servidor local não respondeu a tempo.");
-                        MessageBox.Show("O servidor local do Montanha Creative não respondeu a tempo na porta 8765.\nVerifique se o Python está instalado ou consulte Data\\server.log.",
+                        MessageBox.Show("O servidor local do Montanha Creative não respondeu a tempo na porta 8780.\nVerifique se o Python está instalado ou consulte Data\\server.log.",
                             "Montanha Creative", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                 }
                 else
                 {
-                    log("Servidor já estava ativo na porta 8765.");
+                    log("Servidor já estava ativo na porta 8780.");
                 }
 
                 // 2. Lança Microsoft Edge em modo de Janela de Aplicativo Nativo
@@ -112,8 +112,16 @@ namespace MontanhaCreative
                 req.Method = "GET";
                 using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
                 {
-                    return resp.StatusCode == HttpStatusCode.OK;
+                    if (resp.StatusCode == HttpStatusCode.OK)
+                    {
+                        using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
+                        {
+                            string text = sr.ReadToEnd();
+                            return text.Contains("Montanha Creative");
+                        }
+                    }
                 }
+                return false;
             }
             catch
             {

@@ -30,6 +30,6 @@ O **Montanha Creative (v3.0 Pro)** é a plataforma criativa unificada e autônom
 
 ## 3. Arquitetura de Software
 - **Desktop Launcher**: `MontanhaCreative.exe` compilado em C# .NET Framework 4.8 com ícone embutido (`appicon.ico`). Abre o Microsoft Edge em modo janela de aplicativo nativo (`--app`) com perfil isolado em `Data\Profile`.
-- **Backend**: Servidor HTTP Python `server.py` rodando em `http://127.0.0.1:8765/` com ThreadingHTTPServer e proteção contra CSRF/Host rebind.
+- **Backend**: Servidor HTTP Python `server.py` rodando em `http://127.0.0.1:8780/` com ThreadingHTTPServer e proteção contra CSRF/Host rebind.
 - **Frontend**: Zero dependências externas (sem frameworks pesados). HTML5, CSS3 com design system Apple HIG/Stageshow e JavaScript modular (`app.js`, `engine_photo.js`).
 - **Craft Suite Bridge**: Integração com ferramentas da suíte Craft instaladas em `C:\Program Files` (`PhotoCraft`, `SoundCraft`, `FilmCraft`, `VectorCraft`, `PdfCraft`).

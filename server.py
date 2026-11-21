@@ -289,7 +289,7 @@ class SuiteHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
 
-def run_server(port=8765):
+def run_server(port=8780):
     server = ThreadingHTTPServer(("127.0.0.1", port), SuiteHandler)
     print(f"⛰️ Montanha Creative Server rodando em http://127.0.0.1:{port}/")
     try:
@@ -299,7 +299,7 @@ def run_server(port=8765):
         server.server_close()
 
 if __name__ == "__main__":
-    p = 8765
+    p = 8780
     if len(sys.argv) > 1:
         try:
             p = int(sys.argv[1])
