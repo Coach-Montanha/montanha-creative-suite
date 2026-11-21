@@ -266,11 +266,8 @@ function transferAiToPhoto(canvasId) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const dataUrl = canvas.toDataURL('image/png');
-  const stage = document.querySelector('.sample-photo-composition');
-  if (stage) {
-    stage.style.backgroundImage = `url("${dataUrl}")`;
-    stage.style.backgroundSize = 'cover';
-    stage.style.backgroundPosition = 'center';
+  if (window.PhotoLab && typeof window.PhotoLab.addPhotoFromUrl === 'function') {
+    window.PhotoLab.addPhotoFromUrl(dataUrl, 'Foto Neural AI');
   }
   switchTab('photo');
   showHudToast("Imagem carregada no Photo Lab para edição!", "📸");
@@ -630,113 +627,9 @@ document.querySelectorAll('.player-controls .ctl-btn').forEach(btn => {
 });
 
 // ==========================================================================
-// 4. PHOTO LAB ENGINE (Sliders, 4K Save, Zoom & Filters)
+// 4. PHOTO LAB ENGINE CONNECTOR
+// Core Studio, Filmstrip & Tools handled natively by window.PhotoLab & PhotoEngine
 // ==========================================================================
-function updatePhotoLabFilters() {
-  const sliders = document.querySelectorAll('.range-slider');
-  const stage = document.querySelector('.sample-photo-composition');
-  if (!stage || sliders.length < 4) return;
-
-  const brightness = parseInt(sliders[0].value) || 0;
-  const contrast = parseInt(sliders[1].value) || 0;
-  const sharpness = parseInt(sliders[2].value) || 0;
-  const vignette = parseInt(sliders[3].value) || 0;
-
-  // Update readouts
-  sliders[0].parentElement.querySelector('.val').innerText = `${brightness > 0 ? '+' : ''}${brightness}%`;
-  sliders[1].parentElement.querySelector('.val').innerText = `${contrast > 0 ? '+' : ''}${contrast}%`;
-  sliders[2].parentElement.querySelector('.val').innerText = `${sharpness}%`;
-  sliders[3].parentElement.querySelector('.val').innerText = `${vignette}%`;
-
-  // Apply CSS Filter
-  const bVal = 1 + (brightness / 100);
-  const cVal = 1 + (contrast / 100);
-  stage.style.filter = `brightness(${bVal}) contrast(${cVal}) drop-shadow(0 0 ${vignette * 0.4}px rgba(0,0,0,0.8))`;
-}
-
-document.querySelectorAll('.range-slider').forEach(slider => {
-  slider.addEventListener('input', updatePhotoLabFilters);
-});
-
-// Save 4K Photo
-const btnSavePhoto = document.getElementById('btn-save-photo');
-if (btnSavePhoto) {
-  btnSavePhoto.addEventListener('click', () => {
-    btnSavePhoto.disabled = true;
-    btnSavePhoto.innerText = '💾 Exportando em 4K...';
-
-    setTimeout(() => {
-      const exportCanvas = document.createElement('canvas');
-      exportCanvas.width = 3840;
-      exportCanvas.height = 2160;
-      const ctx = exportCanvas.getContext('2d');
-
-      // High-res dark gold background
-      const grad = ctx.createLinearGradient(0, 0, 3840, 2160);
-      grad.addColorStop(0, '#2b1f09');
-      grad.addColorStop(0.6, '#151822');
-      grad.addColorStop(1, '#0d0e14');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 3840, 2160);
-
-      // Gold frame
-      ctx.strokeStyle = '#5a4519';
-      ctx.lineWidth = 16;
-      ctx.strokeRect(60, 60, 3720, 2040);
-
-      // Title & Badge
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 54px sans-serif';
-      ctx.fillText('FOTOGRAFIA PROFISSIONAL • 4K HIGH DEFINITION', 200, 320);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 160px sans-serif';
-      ctx.fillText('COACH MONTANHA', 200, 540);
-
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '60px sans-serif';
-      ctx.fillText('Sessão Técnica • Ajuste Tonal Dark Gold • Nitidez Ultra 60 FPS', 200, 660);
-
-      const dataUrl = exportCanvas.toDataURL('image/png');
-      triggerDownload(dataUrl, `foto_coach_montanha_4k_${Date.now()}.png`);
-
-      btnSavePhoto.disabled = false;
-      btnSavePhoto.innerText = '💾 Salvar Edição em 4K';
-      showHudToast('✅ Fotografia 4K salva com sucesso!', '📸');
-    }, 500);
-  });
-}
-
-// Transfer Photo Lab to Canvix or Video
-document.getElementById('btn-photo-to-canvix')?.addEventListener('click', () => {
-  switchTab('canvix');
-  showHudToast('Foto transferida para Canvix Design!', '🎨');
-});
-
-document.getElementById('btn-photo-to-video')?.addEventListener('click', () => {
-  switchTab('video');
-  showHudToast('Foto definida como capa do Vídeo!', '🎬');
-});
-
-// Zoom Controls in Photo Lab
-let currentZoom = 1.0;
-document.querySelectorAll('.zoom-tools .ctl-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const stage = document.querySelector('.sample-photo-composition');
-    if (!stage) return;
-    const txt = btn.innerText;
-    if (txt === '+') {
-      currentZoom = Math.min(1.8, currentZoom + 0.15);
-    } else if (txt === '-') {
-      currentZoom = Math.max(0.6, currentZoom - 0.15);
-    } else {
-      currentZoom = 1.0;
-    }
-    stage.style.transform = `scale(${currentZoom})`;
-    stage.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
-    showHudToast(`Zoom: ${Math.round(currentZoom * 100)}%`, '🔍');
-  });
-});
 
 // ==========================================================================
 // 5. MODAL EXPORT & QUICK SEARCH (Ctrl+K)
@@ -816,85 +709,8 @@ function updateMotionOverlay(type) {
 
 // ==========================================================================
 // 7. KOKON-PHOTO (NATURAL LANGUAGE PHOTO MODIFICATION ENGINE)
+// Integrated directly into window.PhotoLab with live canvas processing
 // ==========================================================================
-function applyKokonPreset(preset) {
-  const sliders = document.querySelectorAll('.range-slider');
-  if (sliders.length < 4) return;
-
-  if (preset === 'muscle') {
-    sliders[0].value = -5;  // Brilho
-    sliders[1].value = 45;  // Contraste
-    sliders[2].value = 75;  // Nitidez
-    sliders[3].value = 40;  // Vignette
-    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
-    document.querySelector('.preset-chips .chip:nth-child(2)')?.classList.add('active'); // Dark Titan
-    showHudToast('Kokon-Photo: Foco Muscular & Definição aplicado!', '🔥');
-  } else if (preset === 'gold') {
-    sliders[0].value = 15;
-    sliders[1].value = 25;
-    sliders[2].value = 40;
-    sliders[3].value = 20;
-    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
-    document.querySelector('.preset-chips .chip:nth-child(1)')?.classList.add('active'); // Gold
-    showHudToast('Kokon-Photo: Golden Hour / Iluminação Lateral aplicado!', '🌅');
-  } else if (preset === 'obsidian') {
-    sliders[0].value = -12;
-    sliders[1].value = 35;
-    sliders[2].value = 55;
-    sliders[3].value = 55;
-    document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
-    document.querySelector('.preset-chips .chip:nth-child(3)')?.classList.add('active'); // Obsidian
-    showHudToast('Kokon-Photo: Dark Titan Chiaroscuro aplicado!', '🌑');
-  } else if (preset === 'isolate') {
-    sliders[0].value = 5;
-    sliders[1].value = 30;
-    sliders[2].value = 45;
-    sliders[3].value = 75;
-    showHudToast('Kokon-Photo: Isolamento do Atleta em Primeiro Plano aplicado!', '⚡');
-  }
-  updatePhotoLabFilters();
-}
-
-const btnApplyKokon = document.getElementById('btn-apply-kokon');
-if (btnApplyKokon) {
-  btnApplyKokon.addEventListener('click', () => {
-    const input = document.getElementById('kokon-prompt-input');
-    const text = input ? input.value.toLowerCase().trim() : '';
-    if (!text) {
-      applyKokonPreset('muscle');
-      return;
-    }
-
-    if (text.includes('dourad') || text.includes('gold') || text.includes('quente')) {
-      applyKokonPreset('gold');
-    } else if (text.includes('dark') || text.includes('titan') || text.includes('escur') || text.includes('somb')) {
-      applyKokonPreset('obsidian');
-    } else if (text.includes('isol') || text.includes('foco') || text.includes('fundo')) {
-      applyKokonPreset('isolate');
-    } else {
-      applyKokonPreset('muscle');
-    }
-  });
-}
-
-// Sub-tabs in Photo Lab
-document.querySelectorAll('.photo-sidebar .sub-nav-tabs .sub-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.photo-sidebar .sub-nav-tabs .sub-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const kind = tab.getAttribute('data-photosub');
-    const kokonBox = document.getElementById('kokon-photo-box');
-    const slidersBox = document.getElementById('photo-sliders-container');
-
-    if (kind === 'kokon') {
-      if (kokonBox) kokonBox.style.display = 'block';
-      showHudToast('Modo Kokon IA ativado: digite sua instrução!', '✨');
-    } else {
-      if (kokonBox) kokonBox.style.display = 'block'; // Keep accessible
-      showHudToast(`Aba Photo Lab: ${tab.innerText}`, '📸');
-    }
-  });
-});
 
 // ==========================================================================
 // 8. MONEYPRINTERTURBO AUTOMATED B-ROLL MATCHING ENGINE
