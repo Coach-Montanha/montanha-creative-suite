@@ -119,7 +119,9 @@ class SuiteHandler(SimpleHTTPRequestHandler):
             self.path = "/index.html"
             return super().do_GET()
 
-        if path == "/api/config":
+        if path == "/api/ping":
+            self.send_json({"status": "ok", "app": "Montanha Creative Pro", "port": self.server.server_address[1]})
+        elif path == "/api/config":
             self.send_json(load_config())
         elif path == "/api/craft/status":
             cfg = load_config()
